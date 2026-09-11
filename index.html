@@ -1,0 +1,1734 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1020" />
+    <meta
+      name="description"
+      content="3초 안에 이 괴상한 문장이 팩트인지 AI 헛소리인지 맞혀보세요."
+    />
+    <title>3-Second AI Bullshit Detector</title>
+
+    <script>
+      tailwind = {
+        theme: {
+          extend: {
+            colors: {
+              ink: '#0b1020',
+              neon: '#63f4a8',
+              cap: '#ff4f88',
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #0b1020;
+        --slate: #0f172a;
+        --slate-2: #151f35;
+        --muted: #8a94ab;
+        --line: rgba(148, 163, 184, 0.16);
+        --line-strong: rgba(148, 163, 184, 0.3);
+        --fact: #63f4a8;
+        --fact-deep: #16a66b;
+        --cap: #ff4f88;
+        --cap-deep: #d52f68;
+        --violet: #9b8cff;
+        --display: 'Arial Black', Impact, Haettenschweiler, 'Franklin Gothic Heavy', sans-serif;
+        --body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-width: 320px;
+        background: var(--ink);
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        background:
+          radial-gradient(circle at 50% -15%, rgba(89, 78, 216, 0.2), transparent 34rem),
+          var(--ink);
+        color: #f8fafc;
+        font-family: var(--body);
+      }
+
+      body::before {
+        position: fixed;
+        z-index: -2;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+        background-size: 32px 32px;
+        content: '';
+        mask-image: linear-gradient(to bottom, black, transparent 82%);
+        pointer-events: none;
+      }
+
+      body::after {
+        position: fixed;
+        z-index: -1;
+        top: 12rem;
+        left: 50%;
+        width: 34rem;
+        height: 34rem;
+        border-radius: 999px;
+        background: rgba(99, 244, 168, 0.04);
+        filter: blur(80px);
+        content: '';
+        pointer-events: none;
+        transform: translateX(-50%);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      button:focus-visible {
+        outline: 3px solid rgba(255, 255, 255, 0.9);
+        outline-offset: 4px;
+      }
+
+      .app-shell {
+        position: relative;
+        width: min(100%, 74rem);
+        margin: 0 auto;
+        padding: 1.25rem 1rem 2rem;
+      }
+
+      .brand-lockup {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 2.55rem;
+        height: 2.55rem;
+        place-items: center;
+        border: 1px solid rgba(99, 244, 168, 0.65);
+        border-radius: 0.8rem;
+        background: linear-gradient(145deg, rgba(99, 244, 168, 0.18), rgba(139, 92, 246, 0.2));
+        box-shadow: 0 0 24px rgba(99, 244, 168, 0.14), inset 0 0 20px rgba(255, 255, 255, 0.05);
+        color: var(--fact);
+      }
+
+      .brand-name {
+        display: block;
+        font-family: var(--display);
+        font-size: 0.88rem;
+        font-style: italic;
+        letter-spacing: 0.04em;
+        line-height: 1;
+      }
+
+      .brand-subtitle {
+        display: block;
+        margin-top: 0.33rem;
+        color: #64748b;
+        font-size: 0.57rem;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        min-height: 2.75rem;
+      }
+
+      .stat-cluster {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .stat-chip,
+      .sound-button {
+        border: 1px solid var(--line);
+        background: rgba(15, 23, 42, 0.72);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        backdrop-filter: blur(12px);
+      }
+
+      .stat-chip {
+        min-width: 5.2rem;
+        padding: 0.42rem 0.57rem 0.45rem;
+        border-radius: 0.72rem;
+        color: #8792a9;
+        font-size: 0.58rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        line-height: 1.05;
+        text-align: center;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .stat-chip strong {
+        display: block;
+        margin-top: 0.17rem;
+        color: #f8fafc;
+        font-size: 0.83rem;
+        letter-spacing: 0;
+      }
+
+      .stat-chip:first-child strong {
+        color: var(--fact);
+        text-shadow: 0 0 14px rgba(99, 244, 168, 0.42);
+      }
+
+      .sound-button {
+        display: grid;
+        width: 2.5rem;
+        height: 2.5rem;
+        padding: 0;
+        place-items: center;
+        border-radius: 0.72rem;
+        color: #bac4d4;
+        cursor: pointer;
+        transition: border-color 180ms ease, color 180ms ease, transform 180ms ease, background 180ms ease;
+      }
+
+      .sound-button:hover {
+        border-color: rgba(99, 244, 168, 0.55);
+        background: rgba(99, 244, 168, 0.1);
+        color: var(--fact);
+        transform: translateY(-2px);
+      }
+
+      .sound-button.is-on {
+        border-color: rgba(99, 244, 168, 0.48);
+        color: var(--fact);
+      }
+
+      .hero {
+        margin: clamp(2.7rem, 9vw, 6.5rem) auto 2rem;
+        max-width: 44rem;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+        color: var(--fact);
+        font-size: 0.64rem;
+        font-weight: 900;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before,
+      .eyebrow::after {
+        width: 1.6rem;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--fact));
+        content: '';
+      }
+
+      .eyebrow::after {
+        background: linear-gradient(90deg, var(--fact), transparent);
+      }
+
+      .hero h1 {
+        margin: 0.9rem 0 0;
+        font-family: var(--display);
+        font-size: clamp(2.15rem, 9vw, 4.6rem);
+        font-style: italic;
+        letter-spacing: -0.06em;
+        line-height: 0.94;
+        text-transform: uppercase;
+        text-wrap: balance;
+      }
+
+      .hero h1 .hot {
+        color: var(--cap);
+        text-shadow: 0 0 30px rgba(255, 79, 136, 0.25);
+      }
+
+      .hero-copy {
+        max-width: 31rem;
+        margin: 1.05rem auto 0;
+        color: #8995ab;
+        font-size: 0.84rem;
+        font-weight: 600;
+        line-height: 1.65;
+      }
+
+      .game-shell {
+        position: relative;
+        max-width: 53rem;
+        margin: 0 auto;
+        padding: 0.72rem;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 1.7rem;
+        background: linear-gradient(145deg, rgba(31, 41, 65, 0.68), rgba(10, 15, 29, 0.88));
+        box-shadow: 0 32px 90px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+      }
+
+      .game-shell::before {
+        position: absolute;
+        top: -1px;
+        right: 15%;
+        left: 15%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(99, 244, 168, 0.8), transparent);
+        content: '';
+      }
+
+      .game-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.38rem 0.43rem 0.75rem;
+        color: #76829b;
+        font-size: 0.61rem;
+        font-weight: 900;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .round-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.42rem;
+      }
+
+      .live-dot {
+        width: 0.42rem;
+        height: 0.42rem;
+        border-radius: 999px;
+        background: var(--cap);
+        box-shadow: 0 0 0 4px rgba(255, 79, 136, 0.12), 0 0 12px rgba(255, 79, 136, 0.85);
+        animation: livePulse 1.5s ease-in-out infinite;
+      }
+
+      .round-progress {
+        display: flex;
+        gap: 0.22rem;
+      }
+
+      .round-progress i {
+        display: block;
+        width: 0.65rem;
+        height: 0.2rem;
+        border-radius: 999px;
+        background: #2b354a;
+        transition: width 220ms ease, background 220ms ease, box-shadow 220ms ease;
+      }
+
+      .round-progress i.is-current {
+        width: 1.2rem;
+        background: var(--fact);
+        box-shadow: 0 0 10px rgba(99, 244, 168, 0.5);
+      }
+
+      .round-progress i.is-done {
+        background: rgba(99, 244, 168, 0.46);
+      }
+
+      .question-card {
+        position: relative;
+        overflow: hidden;
+        padding: clamp(1.2rem, 4vw, 2.4rem);
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 1.2rem;
+        background:
+          radial-gradient(circle at 88% 0%, rgba(99, 244, 168, 0.09), transparent 18rem),
+          linear-gradient(145deg, rgba(25, 37, 61, 0.92), rgba(13, 19, 34, 0.98));
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.035);
+      }
+
+      .question-card::after {
+        position: absolute;
+        right: -8rem;
+        bottom: -10rem;
+        width: 18rem;
+        height: 18rem;
+        border: 1px solid rgba(139, 92, 246, 0.1);
+        border-radius: 50%;
+        box-shadow: 0 0 0 2rem rgba(139, 92, 246, 0.02), 0 0 0 4rem rgba(139, 92, 246, 0.012);
+        content: '';
+        pointer-events: none;
+      }
+
+      .question-head {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+
+      .signal-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 0.68rem;
+        border: 1px solid rgba(255, 79, 136, 0.32);
+        border-radius: 0.55rem;
+        background: rgba(255, 79, 136, 0.08);
+        color: #ff8eb3;
+        font-size: 0.6rem;
+        font-weight: 950;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      .signal-badge svg {
+        width: 0.85rem;
+        height: 0.85rem;
+      }
+
+      .question-id {
+        color: #718098;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.63rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+      }
+
+      .statement-wrap {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        min-height: 11rem;
+        align-items: center;
+        justify-content: center;
+        padding: 1.7rem 0.25rem 1.45rem;
+        text-align: center;
+      }
+
+      .statement {
+        max-width: 40rem;
+        margin: 0;
+        color: #f8fafc;
+        font-size: clamp(1.42rem, 4.5vw, 2.3rem);
+        font-weight: 850;
+        letter-spacing: -0.045em;
+        line-height: 1.17;
+        text-wrap: balance;
+      }
+
+      .statement .quote-mark {
+        color: var(--fact);
+        font-family: Georgia, serif;
+        font-size: 1.35em;
+        line-height: 0;
+        vertical-align: -0.13em;
+      }
+
+      .timer-block {
+        position: relative;
+        z-index: 1;
+        padding: 0.85rem 0.9rem 0.95rem;
+        border: 1px solid rgba(148, 163, 184, 0.13);
+        border-radius: 0.82rem;
+        background: rgba(7, 11, 23, 0.34);
+      }
+
+      .timer-meta,
+      .timer-ticks {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .timer-meta {
+        margin-bottom: 0.63rem;
+        color: #7e8ca4;
+        font-size: 0.6rem;
+        font-weight: 900;
+        letter-spacing: 0.17em;
+        text-transform: uppercase;
+      }
+
+      .timer-number {
+        color: var(--fact);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.8rem;
+        letter-spacing: 0;
+        text-shadow: 0 0 12px rgba(99, 244, 168, 0.52);
+      }
+
+      .timer-track {
+        height: 0.62rem;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #253047;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+      }
+
+      .timer-fill {
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #ffca65 0%, var(--fact) 58%, #b6ffda 100%);
+        box-shadow: 0 0 15px rgba(99, 244, 168, 0.62);
+        transform: scaleX(1);
+        transform-origin: left center;
+        will-change: transform;
+      }
+
+      .timer-ticks {
+        margin-top: 0.42rem;
+        color: #4f5c73;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.52rem;
+        font-weight: 800;
+      }
+
+      .choice-heading {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin: 1.35rem 0 0.66rem;
+        color: #95a0b5;
+        font-size: 0.64rem;
+        font-weight: 850;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      .choice-heading kbd {
+        min-width: 1.25rem;
+        padding: 0.2rem 0.3rem;
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 0.32rem;
+        color: #738198;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.54rem;
+        text-align: center;
+      }
+
+      .answer-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.65rem;
+      }
+
+      .answer-button {
+        position: relative;
+        display: flex;
+        min-height: 8.2rem;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        overflow: hidden;
+        padding: 0.88rem;
+        border: 1px solid;
+        border-radius: 0.9rem;
+        cursor: pointer;
+        text-align: left;
+        transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+      }
+
+      .answer-button::after {
+        position: absolute;
+        right: -1.2rem;
+        bottom: -1.9rem;
+        width: 5rem;
+        height: 5rem;
+        border-radius: 50%;
+        content: '';
+        opacity: 0.12;
+        transition: transform 220ms ease;
+      }
+
+      .answer-button:hover:not(:disabled) {
+        transform: translateY(-4px);
+      }
+
+      .answer-button:hover:not(:disabled)::after {
+        transform: scale(1.45);
+      }
+
+      .answer-button:active:not(:disabled) {
+        transform: translateY(1px) scale(0.985);
+      }
+
+      .answer-button:disabled {
+        cursor: not-allowed;
+        filter: saturate(0.6);
+        opacity: 0.64;
+      }
+
+      .answer-button.fact {
+        border-color: rgba(99, 244, 168, 0.32);
+        background: linear-gradient(145deg, rgba(24, 126, 88, 0.2), rgba(11, 45, 44, 0.46));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 22px rgba(22, 166, 107, 0.07);
+      }
+
+      .answer-button.fact::after {
+        background: var(--fact);
+      }
+
+      .answer-button.fact:hover:not(:disabled) {
+        border-color: rgba(99, 244, 168, 0.82);
+        background: linear-gradient(145deg, rgba(24, 126, 88, 0.34), rgba(11, 45, 44, 0.64));
+        box-shadow: 0 10px 28px rgba(22, 166, 107, 0.17), 0 0 0 1px rgba(99, 244, 168, 0.12) inset;
+      }
+
+      .answer-button.cap {
+        border-color: rgba(255, 79, 136, 0.32);
+        background: linear-gradient(145deg, rgba(144, 35, 82, 0.22), rgba(54, 22, 55, 0.48));
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 8px 22px rgba(213, 47, 104, 0.07);
+      }
+
+      .answer-button.cap::after {
+        background: var(--cap);
+      }
+
+      .answer-button.cap:hover:not(:disabled) {
+        border-color: rgba(255, 79, 136, 0.84);
+        background: linear-gradient(145deg, rgba(144, 35, 82, 0.36), rgba(54, 22, 55, 0.68));
+        box-shadow: 0 10px 28px rgba(213, 47, 104, 0.17), 0 0 0 1px rgba(255, 79, 136, 0.12) inset;
+      }
+
+      .answer-icon {
+        display: grid;
+        width: 2.25rem;
+        height: 2.25rem;
+        place-items: center;
+        border: 1px solid;
+        border-radius: 0.62rem;
+      }
+
+      .answer-icon svg {
+        width: 1.16rem;
+        height: 1.16rem;
+        stroke-width: 2.5;
+      }
+
+      .fact .answer-icon {
+        border-color: rgba(99, 244, 168, 0.4);
+        background: rgba(99, 244, 168, 0.13);
+        color: var(--fact);
+      }
+
+      .cap .answer-icon {
+        border-color: rgba(255, 79, 136, 0.42);
+        background: rgba(255, 79, 136, 0.13);
+        color: #ff8eb3;
+      }
+
+      .answer-copy {
+        display: block;
+      }
+
+      .answer-label {
+        display: block;
+        font-family: var(--display);
+        font-size: clamp(1.1rem, 4vw, 1.42rem);
+        font-style: italic;
+        letter-spacing: 0.02em;
+        line-height: 1;
+      }
+
+      .fact .answer-label {
+        color: var(--fact);
+      }
+
+      .cap .answer-label {
+        color: #ff77a5;
+      }
+
+      .answer-kr {
+        display: block;
+        margin-top: 0.34rem;
+        color: #d0d7e3;
+        font-size: 0.69rem;
+        font-weight: 750;
+      }
+
+      .answer-key {
+        position: absolute;
+        top: 0.9rem;
+        right: 0.9rem;
+        color: #728099;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.55rem;
+        font-weight: 900;
+      }
+
+      .card-footnote {
+        position: relative;
+        z-index: 1;
+        margin: 0.82rem 0 0;
+        color: #627089;
+        font-size: 0.62rem;
+        font-weight: 650;
+        line-height: 1.5;
+        text-align: center;
+      }
+
+      .card-footnote span {
+        color: #9ea9bb;
+      }
+
+      .footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 1.4rem auto 0;
+        color: #536078;
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .footer .footer-dot {
+        width: 0.22rem;
+        height: 0.22rem;
+        border-radius: 999px;
+        background: var(--cap);
+      }
+
+      .feedback-overlay {
+        position: fixed;
+        z-index: 50;
+        inset: 0;
+        display: grid;
+        overflow-y: auto;
+        padding: 1rem;
+        place-items: center;
+        background: rgba(3, 6, 17, 0.78);
+        backdrop-filter: blur(16px);
+        opacity: 1;
+        transition: opacity 180ms ease;
+      }
+
+      .feedback-overlay.is-hidden {
+        display: none;
+      }
+
+      .feedback-panel {
+        width: min(100%, 32rem);
+        margin: auto;
+        padding: 1.4rem;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        border-radius: 1.35rem;
+        background: linear-gradient(145deg, rgba(30, 42, 69, 0.98), rgba(10, 15, 29, 0.99));
+        box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+        animation: panelIn 320ms cubic-bezier(0.2, 0.85, 0.3, 1.15) both;
+      }
+
+      .feedback-panel.is-correct {
+        border-color: rgba(99, 244, 168, 0.34);
+        box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55), 0 0 70px rgba(99, 244, 168, 0.1), 0 0 0 1px rgba(99, 244, 168, 0.06) inset;
+      }
+
+      .feedback-panel.is-wrong {
+        border-color: rgba(255, 79, 136, 0.36);
+        box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55), 0 0 70px rgba(255, 79, 136, 0.1), 0 0 0 1px rgba(255, 79, 136, 0.06) inset;
+      }
+
+      .feedback-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .feedback-icon {
+        display: grid;
+        width: 3.35rem;
+        height: 3.35rem;
+        place-items: center;
+        border: 1px solid;
+        border-radius: 1rem;
+      }
+
+      .feedback-icon svg {
+        width: 1.62rem;
+        height: 1.62rem;
+        stroke-width: 2.4;
+      }
+
+      .is-correct .feedback-icon {
+        border-color: rgba(99, 244, 168, 0.46);
+        background: rgba(99, 244, 168, 0.14);
+        color: var(--fact);
+      }
+
+      .is-wrong .feedback-icon {
+        border-color: rgba(255, 79, 136, 0.48);
+        background: rgba(255, 79, 136, 0.14);
+        color: #ff77a5;
+      }
+
+      .feedback-kicker {
+        margin: 0.24rem 0 0;
+        color: #8995aa;
+        font-size: 0.62rem;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .feedback-title {
+        margin: 0.28rem 0 0;
+        font-family: var(--display);
+        font-size: clamp(2.15rem, 9vw, 3.15rem);
+        font-style: italic;
+        letter-spacing: -0.05em;
+        line-height: 0.96;
+        text-transform: uppercase;
+      }
+
+      .is-correct .feedback-title {
+        color: var(--fact);
+        text-shadow: 0 0 26px rgba(99, 244, 168, 0.22);
+      }
+
+      .is-wrong .feedback-title {
+        color: #ff77a5;
+        text-shadow: 0 0 26px rgba(255, 79, 136, 0.2);
+      }
+
+      .feedback-score {
+        flex-shrink: 0;
+        padding: 0.48rem 0.62rem;
+        border: 1px solid rgba(99, 244, 168, 0.28);
+        border-radius: 0.62rem;
+        color: var(--fact);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.65rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .is-wrong .feedback-score {
+        border-color: rgba(255, 79, 136, 0.3);
+        color: #ff8eb3;
+      }
+
+      .answer-reveal {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1.25rem;
+        padding: 0.78rem 0.9rem;
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 0.74rem;
+        background: rgba(5, 10, 22, 0.38);
+      }
+
+      .answer-reveal span {
+        color: #7d8ba4;
+        font-size: 0.6rem;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+      }
+
+      .answer-reveal strong {
+        color: var(--fact);
+        font-size: 0.8rem;
+        font-weight: 950;
+        letter-spacing: 0.05em;
+      }
+
+      .is-wrong .answer-reveal strong {
+        color: #ff9bbc;
+      }
+
+      .feedback-explanation {
+        margin: 1rem 0 0;
+        color: #c4ccda;
+        font-size: 0.89rem;
+        font-weight: 620;
+        line-height: 1.65;
+      }
+
+      .feedback-explanation strong {
+        color: #fff;
+        font-weight: 850;
+      }
+
+      .feedback-actions {
+        display: grid;
+        gap: 0.58rem;
+        margin-top: 1.32rem;
+      }
+
+      .primary-action,
+      .secondary-action {
+        display: flex;
+        min-height: 3.1rem;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55rem;
+        border-radius: 0.76rem;
+        cursor: pointer;
+        font-size: 0.78rem;
+        font-weight: 900;
+        transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+      }
+
+      .primary-action {
+        border: 1px solid rgba(99, 244, 168, 0.52);
+        background: linear-gradient(135deg, rgba(99, 244, 168, 0.97), rgba(22, 166, 107, 0.95));
+        color: #062319;
+        box-shadow: 0 9px 25px rgba(22, 166, 107, 0.24);
+      }
+
+      .primary-action:hover {
+        box-shadow: 0 12px 31px rgba(22, 166, 107, 0.35);
+        transform: translateY(-2px);
+      }
+
+      .secondary-action {
+        border: 1px solid rgba(255, 79, 136, 0.36);
+        background: rgba(255, 79, 136, 0.08);
+        color: #ff9bbc;
+      }
+
+      .secondary-action:hover {
+        border-color: rgba(255, 79, 136, 0.68);
+        background: rgba(255, 79, 136, 0.14);
+        transform: translateY(-2px);
+      }
+
+      .primary-action svg,
+      .secondary-action svg {
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .toast {
+        position: fixed;
+        z-index: 70;
+        bottom: 1.25rem;
+        left: 50%;
+        max-width: calc(100% - 2rem);
+        padding: 0.7rem 0.95rem;
+        border: 1px solid rgba(99, 244, 168, 0.35);
+        border-radius: 0.7rem;
+        background: rgba(13, 25, 34, 0.96);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.32);
+        color: #c9ffe0;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-align: center;
+        transform: translate(-50%, 1rem);
+        transition: opacity 180ms ease, transform 180ms ease;
+      }
+
+      .toast.is-hidden {
+        display: block !important;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .toast:not(.is-hidden) {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      .shake {
+        animation: shake 460ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      }
+
+      .correct-flash .game-shell {
+        animation: correctFlash 650ms ease-out both;
+      }
+
+      @keyframes livePulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.55; transform: scale(0.75); }
+      }
+
+      @keyframes panelIn {
+        from { opacity: 0; transform: translateY(1.2rem) scale(0.96); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      @keyframes shake {
+        10%, 90% { transform: translateX(-3px); }
+        20%, 80% { transform: translateX(6px); }
+        30%, 50%, 70% { transform: translateX(-10px); }
+        40%, 60% { transform: translateX(10px); }
+      }
+
+      @keyframes correctFlash {
+        0% { box-shadow: 0 32px 90px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(99, 244, 168, 0); }
+        35% { box-shadow: 0 32px 90px rgba(0, 0, 0, 0.35), 0 0 0 5px rgba(99, 244, 168, 0.28), 0 0 52px rgba(99, 244, 168, 0.18); }
+        100% { box-shadow: 0 32px 90px rgba(0, 0, 0, 0.35), 0 0 0 0 rgba(99, 244, 168, 0); }
+      }
+
+      @media (min-width: 640px) {
+        .app-shell {
+          padding-right: 1.5rem;
+          padding-left: 1.5rem;
+        }
+
+        .stat-chip {
+          min-width: 7.2rem;
+          padding-right: 0.75rem;
+          padding-left: 0.75rem;
+        }
+
+        .question-card {
+          padding-right: clamp(1.6rem, 5vw, 3.1rem);
+          padding-left: clamp(1.6rem, 5vw, 3.1rem);
+        }
+
+        .answer-button {
+          min-height: 9rem;
+          padding: 1rem;
+        }
+
+        .feedback-panel {
+          padding: 1.8rem;
+        }
+
+        .feedback-actions {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .is-correct .feedback-actions {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (min-width: 900px) {
+        .topbar {
+          padding: 0 0.25rem;
+        }
+
+        .hero {
+          margin-top: 5.2rem;
+          margin-bottom: 2.35rem;
+        }
+
+        .game-shell {
+          padding: 0.9rem;
+        }
+
+        .game-meta {
+          padding-right: 0.62rem;
+          padding-bottom: 0.9rem;
+          padding-left: 0.62rem;
+        }
+      }
+
+      @media (max-width: 430px) {
+        .brand-subtitle {
+          display: none;
+        }
+
+        .brand-name {
+          font-size: 0.74rem;
+        }
+
+        .stat-chip {
+          min-width: auto;
+          padding-right: 0.48rem;
+          padding-left: 0.48rem;
+          font-size: 0.5rem;
+        }
+
+        .stat-chip strong {
+          font-size: 0.73rem;
+        }
+
+        .sound-button {
+          width: 2.35rem;
+          height: 2.35rem;
+        }
+
+        .round-progress i {
+          width: 0.4rem;
+        }
+
+        .round-progress i.is-current {
+          width: 0.75rem;
+        }
+
+        .question-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .question-id {
+          position: absolute;
+          top: 0.33rem;
+          right: 0;
+        }
+
+        .statement-wrap {
+          min-height: 12rem;
+          padding-top: 1.3rem;
+        }
+
+        .answer-button {
+          min-height: 7.35rem;
+        }
+
+        .answer-icon {
+          width: 2rem;
+          height: 2rem;
+        }
+
+        .answer-label {
+          font-size: 1.04rem;
+        }
+
+        .answer-kr {
+          font-size: 0.61rem;
+        }
+
+        .answer-key {
+          top: 0.78rem;
+          right: 0.72rem;
+        }
+
+        .feedback-top {
+          gap: 0.6rem;
+        }
+
+        .feedback-score {
+          padding: 0.4rem 0.45rem;
+          font-size: 0.56rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app" class="app-shell">
+      <header class="topbar" aria-label="Game status">
+        <a class="brand-lockup" href="./" aria-label="3-Second AI Bullshit Detector home">
+          <span class="brand-mark"><i data-lucide="scan-search" aria-hidden="true"></i></span>
+          <span>
+            <span class="brand-name">3-SECOND DETECTOR</span>
+            <span class="brand-subtitle">Fact check your brain</span>
+          </span>
+        </a>
+
+        <div class="stat-cluster">
+          <div class="stat-chip" aria-live="polite">
+            <span>🔥 Streak / Combo</span>
+            <strong id="streakValue">0</strong>
+          </div>
+          <div class="stat-chip">
+            <span>🏆 Best</span>
+            <strong id="bestValue">0</strong>
+          </div>
+          <button id="soundToggle" class="sound-button" type="button" aria-label="소리 켜기" aria-pressed="false">
+            <i data-lucide="volume-x" aria-hidden="true"></i>
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="pageTitle">
+          <p class="eyebrow">NO TIME TO GOOGLE</p>
+          <h1 id="pageTitle">FACT OR <span class="hot">CAP?</span></h1>
+          <p class="hero-copy">
+            AI가 뱉은 것 같은 괴상한 문장, 진짜일까 구라일까?<br class="hidden sm:inline" />
+            <strong>3초 안에 본능으로 골라.</strong>
+          </p>
+        </section>
+
+        <section class="game-shell" aria-label="Fact or Cap quiz">
+          <div class="game-meta">
+            <span class="round-label"><i class="live-dot" aria-hidden="true"></i><span id="roundLabel">LIVE ROUND 01 / 08</span></span>
+            <span class="round-progress" id="roundProgress" aria-label="라운드 진행 상황"></span>
+          </div>
+
+          <article id="questionCard" class="question-card" aria-live="polite">
+            <div class="question-head">
+              <span class="signal-badge"><i data-lucide="radio" aria-hidden="true"></i> Fact or AI Bullshit?</span>
+              <span class="question-id" id="questionId">CASE #001</span>
+            </div>
+
+            <div class="statement-wrap">
+              <h2 class="statement" id="statement"><span class="quote-mark">“</span> 로딩 중... <span class="quote-mark">”</span></h2>
+            </div>
+
+            <div class="timer-block" aria-label="3초 타이머">
+              <div class="timer-meta">
+                <span>TIME TO CALL IT</span>
+                <span class="timer-number" id="timerNumber">3.0s</span>
+              </div>
+              <div class="timer-track" aria-hidden="true"><div id="timerFill" class="timer-fill"></div></div>
+              <div class="timer-ticks" aria-hidden="true"><span>3</span><span>2</span><span>1</span><span>0</span></div>
+            </div>
+
+            <div class="choice-heading">
+              <span>Lock in your call</span>
+              <span><kbd>F</kbd> Fact&nbsp;&nbsp; <kbd>C</kbd> Cap</span>
+            </div>
+
+            <div class="answer-grid">
+              <button id="factButton" class="answer-button fact" type="button" data-answer="fact">
+                <span class="answer-icon"><i data-lucide="check-circle-2" aria-hidden="true"></i></span>
+                <span class="answer-copy"><span class="answer-label">FACT</span><span class="answer-kr">진짜라고 믿는다</span></span>
+                <span class="answer-key" aria-hidden="true">F</span>
+              </button>
+              <button id="capButton" class="answer-button cap" type="button" data-answer="cap">
+                <span class="answer-icon"><i data-lucide="x-circle" aria-hidden="true"></i></span>
+                <span class="answer-copy"><span class="answer-label">CAP</span><span class="answer-kr">AI 헛소리다</span></span>
+                <span class="answer-key" aria-hidden="true">C</span>
+              </button>
+            </div>
+
+            <p class="card-footnote"><span>주의:</span> 너무 오래 고민하면 이미 AI한테 진 거임.</p>
+          </article>
+        </section>
+      </main>
+
+      <footer class="footer"><span>Made for suspicious minds</span><i class="footer-dot" aria-hidden="true"></i><span>Round fast. Think weird.</span></footer>
+    </div>
+
+    <div id="feedbackOverlay" class="feedback-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
+      <section id="feedbackPanel" class="feedback-panel">
+        <div class="feedback-top">
+          <div>
+            <div id="feedbackIcon" class="feedback-icon"><i data-lucide="sparkles" aria-hidden="true"></i></div>
+            <p id="feedbackKicker" class="feedback-kicker">You read the matrix</p>
+            <h2 id="feedbackTitle" class="feedback-title">NICE CALL!</h2>
+          </div>
+          <div id="feedbackScore" class="feedback-score">+1 streak</div>
+        </div>
+
+        <div id="answerReveal" class="answer-reveal">
+          <span>THE ANSWER</span>
+          <strong id="correctAnswer">FACT · 진짜</strong>
+        </div>
+        <p id="feedbackExplanation" class="feedback-explanation"></p>
+
+        <div class="feedback-actions">
+          <button id="continueButton" class="primary-action" type="button"><i data-lucide="arrow-right" aria-hidden="true"></i><span>다음 문제</span></button>
+          <button id="shareButton" class="secondary-action" type="button"><i data-lucide="message-circle" aria-hidden="true"></i><span>카카오톡으로 내 점수 자랑하기</span></button>
+        </div>
+      </section>
+    </div>
+
+    <div id="toast" class="toast is-hidden" role="status" aria-live="polite"></div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script>
+      (() => {
+        'use strict';
+
+        const QUESTION_TIME = 3000;
+        const BEST_SCORE_KEY = 'three-second-detector-best';
+
+        const questionBank = [
+          {
+            id: 1,
+            text: '우주에서는 트림을 할 수 없다.',
+            isFact: true,
+            explanation: '팩트! 무중력에서는 위 속 기체와 액체가 층으로 나뉘지 않아, 지구처럼 깔끔하게 트림하기 어렵습니다.',
+          },
+          {
+            id: 2,
+            text: '해파리는 뇌와 심장이 모두 없다.',
+            isFact: true,
+            explanation: '팩트! 해파리는 신경망으로 몸을 움직이고, 온몸으로 산소를 흡수해서 뇌와 심장이 필요 없습니다.',
+          },
+          {
+            id: 3,
+            text: '프랑스 샤토뇌프뒤파프에는 비행접시 착륙 금지법이 있다.',
+            isFact: true,
+            explanation: '팩트! 1954년에 만들어진 조례로, 마을 포도밭에 UFO가 착륙하는 것을 금지한다고 실제로 적혀 있습니다.',
+          },
+          {
+            id: 4,
+            text: '바나나는 식물학적으로 베리이고, 딸기는 베리가 아니다.',
+            isFact: true,
+            explanation: '팩트! 식물학적 베리의 조건을 바나나는 충족하지만, 딸기는 여러 씨방이 모인 집합과일입니다.',
+          },
+          {
+            id: 5,
+            text: '나폴레옹은 토마토 알레르기 때문에 케첩을 법으로 사형시켰다.',
+            isFact: false,
+            explanation: '캡! 나폴레옹의 알레르기와 케첩 처형 기록은 없습니다. AI가 역사극 톤으로 만든 완벽한 헛소리예요.',
+          },
+          {
+            id: 6,
+            text: '클레오파트라는 와이파이 비밀번호를 매일 파피루스에 기록했다.',
+            isFact: false,
+            explanation: '캡! 와이파이는 20세기에 등장했습니다. 고대 이집트의 파피루스와 연결한 시대착오 밈입니다.',
+          },
+          {
+            id: 7,
+            text: '문어는 잉크를 뿜을 때마다 기억 하나를 잃는다.',
+            isFact: false,
+            explanation: '캡! 문어의 잉크는 포식자를 속이는 방어 수단이지, 기억을 지우는 생물학적 리셋 버튼이 아닙니다.',
+          },
+          {
+            id: 8,
+            text: '에펠탑은 비가 오면 6cm 낮아지도록 설계됐다.',
+            isFact: false,
+            explanation: '캡! 철은 온도에 따라 팽창·수축하지만, 비가 오면 6cm 낮아지도록 설계했다는 기록은 없습니다.',
+          },
+        ];
+
+        const state = {
+          deck: [],
+          currentIndex: 0,
+          streak: 0,
+          best: loadBestScore(),
+          timerFrame: null,
+          timerStartedAt: 0,
+          timerRunning: false,
+          answered: false,
+          soundOn: false,
+          lastRunScore: 0,
+          feedbackIsCorrect: false,
+          feedbackIsFinal: false,
+          toastTimeout: null,
+        };
+
+        const elements = {
+          app: document.getElementById('app'),
+          streakValue: document.getElementById('streakValue'),
+          bestValue: document.getElementById('bestValue'),
+          soundToggle: document.getElementById('soundToggle'),
+          roundLabel: document.getElementById('roundLabel'),
+          roundProgress: document.getElementById('roundProgress'),
+          questionCard: document.getElementById('questionCard'),
+          questionId: document.getElementById('questionId'),
+          statement: document.getElementById('statement'),
+          timerNumber: document.getElementById('timerNumber'),
+          timerFill: document.getElementById('timerFill'),
+          factButton: document.getElementById('factButton'),
+          capButton: document.getElementById('capButton'),
+          feedbackOverlay: document.getElementById('feedbackOverlay'),
+          feedbackPanel: document.getElementById('feedbackPanel'),
+          feedbackIcon: document.getElementById('feedbackIcon'),
+          feedbackKicker: document.getElementById('feedbackKicker'),
+          feedbackTitle: document.getElementById('feedbackTitle'),
+          feedbackScore: document.getElementById('feedbackScore'),
+          answerReveal: document.getElementById('answerReveal'),
+          correctAnswer: document.getElementById('correctAnswer'),
+          feedbackExplanation: document.getElementById('feedbackExplanation'),
+          continueButton: document.getElementById('continueButton'),
+          shareButton: document.getElementById('shareButton'),
+          toast: document.getElementById('toast'),
+        };
+
+        function loadBestScore() {
+          try {
+            const saved = Number.parseInt(window.localStorage.getItem(BEST_SCORE_KEY) || '0', 10);
+            return Number.isFinite(saved) && saved > 0 ? saved : 0;
+          } catch (error) {
+            return 0;
+          }
+        }
+
+        function saveBestScore() {
+          try {
+            window.localStorage.setItem(BEST_SCORE_KEY, String(state.best));
+          } catch (error) {
+            // Private browsing can disable storage; the in-memory score still works.
+          }
+        }
+
+        function shuffle(items) {
+          const copy = [...items];
+          for (let index = copy.length - 1; index > 0; index -= 1) {
+            const randomIndex = Math.floor(Math.random() * (index + 1));
+            [copy[index], copy[randomIndex]] = [copy[randomIndex], copy[index]];
+          }
+          return copy;
+        }
+
+        function refreshIcons() {
+          if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+          }
+        }
+
+        function updateStats() {
+          elements.streakValue.textContent = String(state.streak);
+          elements.bestValue.textContent = String(state.best);
+          elements.streakValue.parentElement.classList.toggle('is-hot', state.streak >= 3);
+        }
+
+        function updateRoundProgress() {
+          elements.roundLabel.textContent = `LIVE ROUND ${String(state.currentIndex + 1).padStart(2, '0')} / ${String(state.deck.length).padStart(2, '0')}`;
+          elements.roundProgress.innerHTML = state.deck
+            .map((_, index) => {
+              const status = index < state.currentIndex ? 'is-done' : index === state.currentIndex ? 'is-current' : '';
+              return `<i class="${status}" aria-hidden="true"></i>`;
+            })
+            .join('');
+        }
+
+        function renderQuestion() {
+          const question = state.deck[state.currentIndex];
+          if (!question) return;
+
+          state.answered = false;
+          elements.statement.innerHTML = `<span class="quote-mark">“</span> ${question.text} <span class="quote-mark">”</span>`;
+          elements.questionId.textContent = `CASE #${String(question.id).padStart(3, '0')}`;
+          elements.factButton.disabled = false;
+          elements.capButton.disabled = false;
+          elements.timerFill.style.transform = 'scaleX(1)';
+          elements.timerNumber.textContent = '3.0s';
+          elements.timerNumber.style.color = 'var(--fact)';
+          elements.questionCard.classList.remove('shake');
+          updateRoundProgress();
+          refreshIcons();
+          startTimer();
+        }
+
+        function startGame() {
+          cancelTimer();
+          state.deck = shuffle(questionBank);
+          state.currentIndex = 0;
+          state.streak = 0;
+          state.lastRunScore = 0;
+          updateStats();
+          hideFeedback();
+          renderQuestion();
+        }
+
+        function cancelTimer() {
+          state.timerRunning = false;
+          if (state.timerFrame !== null) {
+            window.cancelAnimationFrame(state.timerFrame);
+            state.timerFrame = null;
+          }
+        }
+
+        function startTimer() {
+          cancelTimer();
+          state.timerRunning = true;
+          state.timerStartedAt = window.performance.now();
+          let lastWholeSecond = 4;
+
+          const tick = (now) => {
+            if (!state.timerRunning || state.answered) return;
+            const elapsed = now - state.timerStartedAt;
+            const remaining = Math.max(0, QUESTION_TIME - elapsed);
+            const progress = Math.max(0, remaining / QUESTION_TIME);
+            const seconds = remaining / 1000;
+
+            elements.timerFill.style.transform = `scaleX(${progress})`;
+            elements.timerNumber.textContent = `${seconds.toFixed(1)}s`;
+            if (seconds <= 1) {
+              elements.timerNumber.style.color = 'var(--cap)';
+            } else if (seconds <= 2) {
+              elements.timerNumber.style.color = '#ffca65';
+            }
+
+            const wholeSecond = Math.ceil(seconds);
+            if (wholeSecond < lastWholeSecond && wholeSecond > 0) {
+              playTick(wholeSecond === 1 ? 660 : 520);
+              lastWholeSecond = wholeSecond;
+            }
+
+            if (remaining <= 0) {
+              elements.timerNumber.textContent = '0.0s';
+              state.timerFrame = null;
+              handleAnswer(null);
+              return;
+            }
+
+            state.timerFrame = window.requestAnimationFrame(tick);
+          };
+
+          state.timerFrame = window.requestAnimationFrame(tick);
+        }
+
+        function handleAnswer(answer) {
+          if (state.answered || !state.timerRunning) return;
+
+          const elapsed = window.performance.now() - state.timerStartedAt;
+          const submittedAnswer = elapsed >= QUESTION_TIME ? null : answer;
+          state.answered = true;
+          cancelTimer();
+          elements.factButton.disabled = true;
+          elements.capButton.disabled = true;
+
+          const question = state.deck[state.currentIndex];
+          const isCorrect = submittedAnswer !== null && submittedAnswer === question.isFact;
+
+          if (isCorrect) {
+            state.streak += 1;
+            state.lastRunScore = state.streak;
+            if (state.streak > state.best) {
+              state.best = state.streak;
+              saveBestScore();
+            }
+            updateStats();
+            playSuccess();
+            flashCorrect();
+            if (state.streak >= 3) celebrate();
+            showFeedback({ isCorrect: true, question, timedOut: false, final: state.currentIndex === state.deck.length - 1 });
+          } else {
+            state.lastRunScore = state.streak;
+            updateStats();
+            playFailure();
+            shakeQuestion();
+            showFeedback({ isCorrect: false, question, timedOut: submittedAnswer === null, final: true });
+            state.streak = 0;
+            updateStats();
+          }
+        }
+
+        function showFeedback({ isCorrect, question, timedOut, final }) {
+          state.feedbackIsCorrect = isCorrect;
+          state.feedbackIsFinal = final;
+          elements.feedbackPanel.classList.toggle('is-correct', isCorrect);
+          elements.feedbackPanel.classList.toggle('is-wrong', !isCorrect);
+
+          if (isCorrect) {
+            elements.feedbackIcon.innerHTML = '<i data-lucide="sparkles" aria-hidden="true"></i>';
+            elements.feedbackKicker.textContent = state.streak >= 3 ? 'Combo mode activated' : 'You read the matrix';
+            elements.feedbackTitle.textContent = final ? 'FULL FACT CHECK' : 'NICE CALL!';
+            elements.feedbackScore.textContent = final ? `${state.streak} / ${state.deck.length} clear` : `+1 streak · ${state.streak}`;
+            elements.correctAnswer.textContent = 'FACT CHECKED · 진짜';
+            elements.answerReveal.hidden = false;
+            elements.feedbackExplanation.textContent = question.explanation;
+            elements.continueButton.innerHTML = final
+              ? '<i data-lucide="rotate-ccw" aria-hidden="true"></i><span>새 라운드 시작</span>'
+              : '<i data-lucide="arrow-right" aria-hidden="true"></i><span>다음 문제</span>';
+            elements.shareButton.hidden = true;
+          } else {
+            elements.feedbackIcon.innerHTML = '<i data-lucide="skull" aria-hidden="true"></i>';
+            elements.feedbackKicker.textContent = timedOut ? 'The clock chose violence' : 'The AI got you';
+            elements.feedbackTitle.textContent = 'BUSTED!';
+            elements.feedbackScore.textContent = `final streak · ${state.lastRunScore}`;
+            elements.correctAnswer.textContent = question.isFact ? 'FACT · 진짜' : 'CAP · AI 헛소리';
+            elements.answerReveal.hidden = false;
+            elements.feedbackExplanation.textContent = question.explanation;
+            elements.continueButton.innerHTML = '<i data-lucide="rotate-ccw" aria-hidden="true"></i><span>다시 도전하기</span>';
+            elements.shareButton.hidden = false;
+          }
+
+          elements.feedbackOverlay.classList.remove('is-hidden');
+          refreshIcons();
+          window.setTimeout(() => elements.continueButton.focus(), 30);
+        }
+
+        function hideFeedback() {
+          elements.feedbackOverlay.classList.add('is-hidden');
+          elements.shareButton.hidden = true;
+        }
+
+        function continueFromFeedback() {
+          hideFeedback();
+          if (!state.feedbackIsCorrect || state.feedbackIsFinal) {
+            startGame();
+            return;
+          }
+          state.currentIndex += 1;
+          renderQuestion();
+        }
+
+        function flashCorrect() {
+          elements.app.classList.remove('correct-flash');
+          void elements.app.offsetWidth;
+          elements.app.classList.add('correct-flash');
+          window.setTimeout(() => elements.app.classList.remove('correct-flash'), 700);
+        }
+
+        function shakeQuestion() {
+          elements.questionCard.classList.remove('shake');
+          void elements.questionCard.offsetWidth;
+          elements.questionCard.classList.add('shake');
+        }
+
+        function celebrate() {
+          if (typeof window.confetti !== 'function') return;
+          const defaults = { spread: 72, ticks: 90, gravity: 1.15, scalar: 0.82, disableForReducedMotion: true };
+          window.confetti({ ...defaults, particleCount: 55, origin: { x: 0.22, y: 0.56 }, colors: ['#63f4a8', '#9b8cff', '#ffffff'] });
+          window.setTimeout(() => {
+            window.confetti({ ...defaults, particleCount: 55, origin: { x: 0.78, y: 0.56 }, colors: ['#ff4f88', '#63f4a8', '#ffca65'] });
+          }, 110);
+        }
+
+        function getAudioContext() {
+          if (!state.soundOn) return null;
+          try {
+            if (!state.audioContext) {
+              const AudioContext = window.AudioContext || window.webkitAudioContext;
+              if (!AudioContext) return null;
+              state.audioContext = new AudioContext();
+            }
+            if (state.audioContext.state === 'suspended') {
+              void state.audioContext.resume().catch(() => {});
+            }
+            return state.audioContext;
+          } catch (error) {
+            return null;
+          }
+        }
+
+        function tone(frequency, duration, type = 'sine', volume = 0.035, delay = 0) {
+          const context = getAudioContext();
+          if (!context) return;
+          try {
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, context.currentTime + delay);
+            gain.gain.setValueAtTime(0.0001, context.currentTime + delay);
+            gain.gain.exponentialRampToValueAtTime(volume, context.currentTime + delay + 0.012);
+            gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + delay + duration);
+            oscillator.connect(gain);
+            gain.connect(context.destination);
+            oscillator.start(context.currentTime + delay);
+            oscillator.stop(context.currentTime + delay + duration + 0.02);
+          } catch (error) {
+            // A muted or unavailable audio device should never interrupt the game.
+          }
+        }
+
+        function playTick(frequency) {
+          tone(frequency, 0.07, 'square', 0.018);
+        }
+
+        function playSuccess() {
+          tone(520, 0.1, 'sine', 0.025);
+          tone(760, 0.16, 'sine', 0.03, 0.08);
+        }
+
+        function playFailure() {
+          tone(180, 0.18, 'sawtooth', 0.03);
+          tone(120, 0.22, 'sawtooth', 0.024, 0.1);
+        }
+
+        function toggleSound() {
+          state.soundOn = !state.soundOn;
+          elements.soundToggle.setAttribute('aria-pressed', String(state.soundOn));
+          elements.soundToggle.setAttribute('aria-label', state.soundOn ? '소리 끄기' : '소리 켜기');
+          elements.soundToggle.classList.toggle('is-on', state.soundOn);
+          elements.soundToggle.innerHTML = `<i data-lucide="${state.soundOn ? 'volume-2' : 'volume-x'}" aria-hidden="true"></i>`;
+          refreshIcons();
+          if (state.soundOn) {
+            tone(640, 0.09, 'sine', 0.025);
+            showToast('사운드 ON · 틱톡 소리가 준비됐어요');
+          } else {
+            showToast('사운드 OFF');
+          }
+        }
+
+        async function shareScore() {
+          const score = state.lastRunScore;
+          const text = `나는 3-Second AI Bullshit Detector에서 ${score}연속 정답! 팩트와 AI 헛소리, 3초 안에 가려냄. 🔥`;
+          try {
+            if (navigator.share) {
+              await navigator.share({ title: 'Fact or Cap?', text, url: window.location.href });
+              showToast('공유 시트를 열었어요 · 카톡으로 자랑해봐요!');
+              return;
+            }
+          } catch (error) {
+            if (error && error.name === 'AbortError') return;
+          }
+
+          let copied = false;
+          try {
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+              await navigator.clipboard.writeText(text);
+              copied = true;
+            }
+          } catch (error) {
+            copied = false;
+          }
+
+          if (!copied) {
+            try {
+              const helper = document.createElement('textarea');
+              helper.value = text;
+              helper.style.position = 'fixed';
+              helper.style.opacity = '0';
+              document.body.appendChild(helper);
+              helper.focus();
+              helper.select();
+              copied = document.execCommand('copy');
+              helper.remove();
+            } catch (error) {
+              copied = false;
+            }
+          }
+
+          showToast(copied ? '점수 복사 완료 · 카카오톡에 붙여넣기!' : '공유할 점수: ' + text);
+        }
+
+        function showToast(message) {
+          window.clearTimeout(state.toastTimeout);
+          elements.toast.textContent = message;
+          elements.toast.classList.remove('is-hidden');
+          state.toastTimeout = window.setTimeout(() => elements.toast.classList.add('is-hidden'), 2800);
+        }
+
+        elements.factButton.addEventListener('click', () => handleAnswer(true));
+        elements.capButton.addEventListener('click', () => handleAnswer(false));
+        elements.continueButton.addEventListener('click', continueFromFeedback);
+        elements.shareButton.addEventListener('click', shareScore);
+        elements.soundToggle.addEventListener('click', toggleSound);
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key.toLowerCase() === 'f' && !elements.factButton.disabled && elements.feedbackOverlay.classList.contains('is-hidden')) {
+            event.preventDefault();
+            handleAnswer(true);
+          }
+          if (event.key.toLowerCase() === 'c' && !elements.capButton.disabled && elements.feedbackOverlay.classList.contains('is-hidden')) {
+            event.preventDefault();
+            handleAnswer(false);
+          }
+          if ((event.key === 'Enter' || event.key === ' ') && !elements.feedbackOverlay.classList.contains('is-hidden')) {
+            if (document.activeElement === elements.shareButton) return;
+            event.preventDefault();
+            continueFromFeedback();
+          }
+        });
+
+        updateStats();
+        startGame();
+      })();
+    </script>
+  </body>
+</html>
