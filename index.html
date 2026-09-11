@@ -3,25 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f6f9fc" />
-    <meta
-      name="description"
-      content="10초 안에 이 괴상한 문장이 팩트인지 AI 헛소리인지 맞혀보세요."
-    />
-    <title>Fact or Cap? · 10-Second Detector</title>
+    <meta name="theme-color" content="#fbf4e7" />
+    <meta name="description" content="컨트롤 없이 선택만으로 성장하는 관전형 방치 RPG 웹게임" />
+    <title>작은 길드 자동원정대 · Tiny Guild Auto Quest</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
     <script>
       tailwind = {
         theme: {
           extend: {
             colors: {
-              indigo: '#533afd',
-              ink: '#0d253d',
-              ruby: '#ea2261',
+              guild: '#28483a',
+              rune: '#7356b5',
+              gold: '#c99635',
+              cream: '#fbf4e7',
             },
           },
         },
@@ -32,27 +30,27 @@
     <style>
       :root {
         color-scheme: light;
-        --primary: #533afd;
-        --primary-deep: #4434d4;
-        --primary-press: #2e2b8c;
-        --primary-soft: #665efd;
-        --primary-subdued: #b9b9f9;
-        --brand-dark: #1c1e54;
-        --ink: #0d253d;
-        --ink-secondary: #273951;
-        --ink-muted: #64748d;
-        --ink-muted-2: #61718a;
-        --canvas: #ffffff;
-        --canvas-soft: #f6f9fc;
-        --canvas-cream: #f5e9d4;
-        --hairline: #e3e8ee;
-        --hairline-input: #a8c3de;
-        --ruby: #ea2261;
-        --magenta: #f96bee;
-        --lemon: #9b6829;
-        --shadow-blue: #003770;
-        --display: Inter, 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        --body: Inter, 'SF Pro Display', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        --cream: #fbf4e7;
+        --cream-deep: #f3e5ce;
+        --paper: #fffdf8;
+        --paper-2: #f7f0e4;
+        --forest: #28483a;
+        --forest-deep: #1d342a;
+        --forest-soft: #dce9d8;
+        --gold: #c99635;
+        --gold-deep: #9d7022;
+        --gold-soft: #faedbf;
+        --rune: #7356b5;
+        --rune-deep: #51348f;
+        --rune-soft: #eee7ff;
+        --berry: #b75b63;
+        --ink: #29352e;
+        --ink-soft: #667268;
+        --line: #eadfcd;
+        --line-strong: #d7c6aa;
+        --sky: #d6eaf0;
+        --display: 'Gowun Dodum', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+        --body: Inter, 'Apple SD Gothic Neo', 'Malgun Gothic', system-ui, sans-serif;
       }
 
       * {
@@ -61,7 +59,7 @@
 
       html {
         min-width: 320px;
-        background: var(--canvas);
+        background: var(--cream);
         scroll-behavior: smooth;
       }
 
@@ -69,11 +67,14 @@
         min-height: 100vh;
         margin: 0;
         overflow-x: hidden;
-        background: var(--canvas);
+        background:
+          radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.85), transparent 25rem),
+          var(--cream);
         color: var(--ink);
         font-family: var(--body);
+        font-size: 14px;
         font-feature-settings: 'ss01';
-        font-weight: 300;
+        font-weight: 400;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
       }
@@ -85,7 +86,7 @@
 
       button:focus-visible,
       a:focus-visible {
-        outline: 3px solid rgba(83, 58, 253, 0.35);
+        outline: 3px solid rgba(115, 86, 181, 0.45);
         outline-offset: 3px;
       }
 
@@ -93,169 +94,162 @@
         cursor: not-allowed;
       }
 
+      button,
       a {
-        color: inherit;
+        -webkit-tap-highlight-color: transparent;
       }
 
-      .page-container {
-        position: relative;
-        z-index: 1;
-        width: min(100% - 32px, 1200px);
+      .app-shell {
+        width: min(100% - 24px, 1240px);
         margin: 0 auto;
+        padding: 12px 0 34px;
       }
 
-      .mesh-hero {
-        position: absolute;
-        z-index: 0;
-        top: 0;
-        right: 0;
-        left: 0;
-        height: clamp(420px, 52vw, 660px);
-        overflow: hidden;
-        pointer-events: none;
-      }
-
-      .mesh-hero::after {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height: 46%;
-        background: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--canvas));
-        content: '';
-      }
-
-      .mesh-svg {
-        position: absolute;
-        top: -3rem;
-        left: 50%;
-        width: max(100%, 960px);
-        height: 560px;
-        transform: translateX(-50%);
-      }
-
-      .site-header {
-        position: relative;
-        padding-top: 20px;
-      }
-
-      .site-nav {
+      .topbar {
+        position: sticky;
+        z-index: 20;
+        top: 10px;
         display: flex;
-        min-height: 64px;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        padding: 12px 16px 12px 20px;
-        border: 1px solid rgba(227, 232, 238, 0.9);
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.93);
-        box-shadow: 0 8px 24px rgba(0, 55, 112, 0.08), 0 2px 6px rgba(0, 55, 112, 0.04);
+        gap: 10px;
+        min-height: 64px;
+        padding: 10px 12px 10px 15px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 253, 248, 0.92);
+        box-shadow: 0 8px 22px rgba(87, 64, 32, 0.08);
         backdrop-filter: blur(14px);
       }
 
       .brand-lockup {
         display: inline-flex;
-        min-width: max-content;
+        min-width: 0;
         align-items: center;
-        gap: 10px;
-        color: var(--ink);
+        gap: 9px;
+        color: var(--forest-deep);
         text-decoration: none;
       }
 
       .brand-mark {
         display: grid;
-        width: 34px;
-        height: 34px;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 auto;
         place-items: center;
-        border-radius: 8px;
-        background: var(--brand-dark);
-        color: #fff;
+        border: 2px solid rgba(255, 255, 255, 0.76);
+        border-radius: 13px;
+        background: linear-gradient(145deg, var(--forest), #41664b);
+        box-shadow: 0 3px 0 #193124;
+        color: var(--gold-soft);
       }
 
       .brand-mark svg {
-        width: 18px;
-        height: 18px;
-        stroke-width: 1.8;
+        width: 20px;
+        height: 20px;
+        stroke-width: 2;
       }
 
-      .brand-name {
+      .brand-title {
         display: block;
-        font-size: 13px;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-        line-height: 1.1;
+        overflow: hidden;
+        font-family: var(--display);
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.07em;
+        line-height: 1.05;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
-      .brand-caption {
+      .brand-subtitle {
         display: block;
         margin-top: 3px;
-        color: var(--ink-muted);
-        font-size: 10px;
-        font-weight: 400;
-        letter-spacing: 0.02em;
+        color: var(--ink-soft);
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
         line-height: 1;
+        text-transform: uppercase;
       }
 
-      .nav-center {
-        display: none;
-        align-items: center;
-        gap: 24px;
-        color: var(--ink-muted-2);
-        font-size: 12px;
-        font-weight: 400;
-      }
-
-      .nav-center span:first-child {
-        color: var(--ink);
-      }
-
-      .nav-actions {
+      .header-stats {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 5px;
       }
 
-      .nav-stat {
-        display: none;
-        min-width: 84px;
-        padding: 7px 10px;
-        border-left: 1px solid var(--hairline);
-        color: var(--ink-muted);
-        font-size: 10px;
-        font-weight: 400;
-        line-height: 1.1;
-        text-align: right;
+      .stat-chip {
+        display: block;
+        min-width: 36px;
+        padding: 4px 3px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.66);
+        color: var(--ink-soft);
+        font-size: 8px;
+        font-weight: 600;
+        line-height: 1.08;
+        text-align: center;
+        text-transform: uppercase;
       }
 
-      .nav-stat strong {
+      .stat-chip strong {
         display: block;
         margin-top: 3px;
-        color: var(--ink);
-        font-size: 14px;
+        color: var(--forest);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11px;
         font-variant-numeric: tabular-nums;
-        font-weight: 500;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.04em;
+      }
+
+      .stat-chip.gold strong {
+        color: var(--gold-deep);
+      }
+
+      .stat-chip.rune strong {
+        color: var(--rune);
+      }
+
+      .save-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--ink-soft);
+        font-size: 9px;
+        white-space: nowrap;
+      }
+
+      .save-status span {
+        display: none;
+      }
+
+      .save-status svg {
+        width: 13px;
+        height: 13px;
+        color: var(--forest);
       }
 
       .sound-button {
         display: grid;
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         flex: 0 0 auto;
         place-items: center;
-        border: 1px solid var(--hairline);
-        border-radius: 9999px;
-        background: var(--canvas);
-        color: var(--ink-muted-2);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--paper);
+        color: var(--ink-soft);
         cursor: pointer;
-        transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
+        transition: transform 150ms ease, background 150ms ease, border-color 150ms ease, color 150ms ease;
       }
 
       .sound-button:hover,
       .sound-button.is-on {
-        border-color: rgba(83, 58, 253, 0.35);
-        background: #f1f0ff;
-        color: var(--primary);
+        border-color: rgba(115, 86, 181, 0.5);
+        background: var(--rune-soft);
+        color: var(--rune);
         transform: translateY(-1px);
       }
 
@@ -264,753 +258,1587 @@
         height: 17px;
       }
 
-      .pill,
-      .tag-pill {
-        display: inline-flex;
-        align-items: center;
-        border-radius: 9999px;
-        font-size: 10px;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        line-height: 1.15;
-        text-transform: uppercase;
-      }
-
-      .tag-pill {
-        gap: 7px;
-        padding: 5px 9px;
-        background: rgba(185, 185, 249, 0.78);
-        color: var(--primary-deep);
-      }
-
-      .tag-pill .tag-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 9999px;
-        background: var(--primary);
-      }
-
       .hero {
         position: relative;
-        max-width: 840px;
-        margin: 74px auto 0;
+        min-height: 244px;
+        margin: 18px -12px 0;
+        padding: 44px 20px 34px;
+        overflow: hidden;
+        border: 1px solid rgba(215, 198, 170, 0.68);
+        border-radius: 24px;
+        background:
+          radial-gradient(circle at 12% 28%, rgba(255, 255, 255, 0.8), transparent 10rem),
+          linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(247, 230, 201, 0.32));
         text-align: center;
       }
 
-      .hero-kicker {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--primary-deep);
-        font-size: 10px;
-        font-weight: 500;
-        letter-spacing: 0.13em;
-        text-transform: uppercase;
-      }
-
-      .hero-kicker::before,
-      .hero-kicker::after {
-        width: 22px;
-        height: 1px;
-        background: rgba(83, 58, 253, 0.32);
+      .hero::before,
+      .hero::after {
+        position: absolute;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.38);
         content: '';
+        pointer-events: none;
       }
 
-      .hero h1 {
-        margin: 14px 0 0;
-        color: var(--ink);
-        font-size: clamp(42px, 8vw, 72px);
-        font-weight: 300;
-        letter-spacing: -0.075em;
-        line-height: 1.01;
-        text-wrap: balance;
+      .hero::before {
+        top: 18px;
+        left: -30px;
+        width: 150px;
+        height: 150px;
+        box-shadow: 310px 116px 0 26px rgba(115, 86, 181, 0.08), 680px -34px 0 42px rgba(255, 255, 255, 0.35);
       }
 
-      .hero h1 .primary-word {
-        color: var(--primary);
+      .hero::after {
+        right: -40px;
+        bottom: -100px;
+        width: 230px;
+        height: 230px;
+        border: 1px solid rgba(115, 86, 181, 0.13);
+        background: transparent;
+        box-shadow: 0 0 0 24px rgba(115, 86, 181, 0.04), 0 0 0 50px rgba(115, 86, 181, 0.03);
       }
 
-      .hero h1 em {
-        display: block;
-        margin-top: 5px;
-        color: var(--ink-secondary);
-        font-size: clamp(25px, 4.5vw, 40px);
-        font-style: normal;
-        letter-spacing: -0.055em;
-      }
-
-      .hero-copy {
-        max-width: 530px;
-        margin: 20px auto 0;
-        color: var(--ink-muted);
-        font-size: 15px;
-        font-weight: 300;
-        letter-spacing: -0.01em;
-        line-height: 1.55;
-      }
-
-      .hero-copy strong {
-        color: var(--ink-secondary);
-        font-weight: 500;
-      }
-
-      .quiz-section {
+      .hero-badge {
         position: relative;
-        max-width: 850px;
-        margin: 52px auto 0;
-      }
-
-      .quiz-section-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        margin-bottom: 12px;
-        padding: 0 4px;
-      }
-
-      .section-label {
-        color: var(--ink-muted-2);
-        font-size: 10px;
-        font-weight: 500;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-      }
-
-      .time-label {
+        z-index: 1;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        color: var(--primary);
+        padding: 6px 10px;
+        border: 1px solid rgba(115, 86, 181, 0.24);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.65);
+        color: var(--rune-deep);
         font-size: 10px;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
+        font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
       }
 
-      .time-label svg {
+      .hero-badge svg {
         width: 13px;
         height: 13px;
       }
 
-      .quiz-card {
+      .hero h1 {
         position: relative;
-        overflow: hidden;
-        padding: clamp(20px, 5vw, 36px);
-        border: 1px solid var(--hairline);
-        border-radius: 12px;
-        background: var(--canvas);
-        box-shadow: 0 8px 24px rgba(0, 55, 112, 0.08), 0 2px 6px rgba(0, 55, 112, 0.04);
-      }
-
-      .quiz-card::before {
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        height: 3px;
-        background: linear-gradient(90deg, var(--primary), var(--magenta), var(--ruby));
-        content: '';
-      }
-
-      .quiz-card-top,
-      .timer-head,
-      .timer-scale,
-      .card-footer,
-      .feedback-meta,
-      .answer-reveal {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-      }
-
-      .quiz-card-top {
-        margin-bottom: 15px;
-      }
-
-      .case-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        color: var(--ink-muted-2);
-        font-size: 10px;
-        font-weight: 500;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
-      }
-
-      .case-badge .live-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 9999px;
-        background: var(--ruby);
-        box-shadow: 0 0 0 4px rgba(234, 34, 97, 0.1);
-        animation: livePulse 1.7s ease-in-out infinite;
-      }
-
-      .case-id {
-        color: var(--ink-muted);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 10px;
-        font-variant-numeric: tabular-nums;
-        letter-spacing: 0.02em;
-      }
-
-      .progress-line {
-        width: min(34%, 190px);
-        height: 4px;
-        overflow: hidden;
-        border-radius: 9999px;
-        background: var(--hairline);
-      }
-
-      .progress-line span {
-        display: block;
-        width: 5.55%;
-        height: 100%;
-        border-radius: inherit;
-        background: var(--primary);
-        transition: width 300ms ease;
-      }
-
-      .statement-area {
-        display: grid;
-        min-height: 190px;
-        align-items: center;
-        justify-items: center;
-        padding: 18px 10px 28px;
-        text-align: center;
-      }
-
-      .statement-quote {
-        margin-bottom: -4px;
-        color: var(--primary-soft);
-        font-family: Georgia, 'Times New Roman', serif;
-        font-size: 58px;
-        font-weight: 400;
-        line-height: 0.5;
-        opacity: 0.52;
-      }
-
-      .statement {
-        max-width: 680px;
-        margin: 0;
-        color: var(--ink);
-        font-size: clamp(24px, 4.8vw, 38px);
-        font-weight: 300;
-        letter-spacing: -0.06em;
-        line-height: 1.15;
+        z-index: 1;
+        margin: 15px auto 0;
+        color: var(--forest-deep);
+        font-family: var(--display);
+        font-size: clamp(31px, 8vw, 64px);
+        font-weight: 700;
+        letter-spacing: -0.11em;
+        line-height: 1.04;
         text-wrap: balance;
       }
 
-      .timer-panel {
-        padding: 14px 15px 12px;
-        border: 1px solid var(--hairline);
-        border-radius: 8px;
-        background: var(--canvas-soft);
+      .hero h1 span {
+        color: var(--rune);
       }
 
-      .timer-head {
-        margin-bottom: 9px;
-        color: var(--ink-muted);
-        font-size: 10px;
+      .hero-copy {
+        position: relative;
+        z-index: 1;
+        max-width: 560px;
+        margin: 12px auto 0;
+        color: var(--ink-soft);
+        font-size: 13px;
         font-weight: 500;
-        letter-spacing: 0.1em;
+        line-height: 1.55;
+        text-wrap: balance;
+      }
+
+      .hero-copy strong {
+        color: var(--forest);
+        font-weight: 700;
+      }
+
+      .main-layout {
+        display: grid;
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      .panel-shell {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 253, 248, 0.88);
+        box-shadow: 0 7px 18px rgba(87, 64, 32, 0.06);
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ink-soft);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
         text-transform: uppercase;
       }
 
-      .timer-number {
-        color: var(--primary);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 13px;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-        letter-spacing: -0.04em;
+      .eyebrow svg {
+        width: 13px;
+        height: 13px;
+        color: var(--rune);
       }
 
-      .timer-track {
-        height: 8px;
+      .small-muted {
+        color: var(--ink-soft);
+        font-size: 11px;
+        line-height: 1.4;
+      }
+
+      .diorama-panel {
+        position: relative;
+        padding: 12px;
         overflow: hidden;
-        border-radius: 9999px;
-        background: #e7eaf1;
       }
 
-      .timer-fill {
+      .diorama-heading {
+        align-items: center;
+        padding: 2px 4px 9px;
+      }
+
+      .live-state {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--forest);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .live-state::before {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--gold);
+        box-shadow: 0 0 0 4px rgba(201, 150, 53, 0.13);
+        content: '';
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+
+      .diorama {
+        position: relative;
+        min-height: 242px;
+        overflow: hidden;
+        border: 1px solid rgba(40, 72, 58, 0.16);
+        border-radius: 15px;
+        background:
+          radial-gradient(circle at 80% 16%, rgba(255, 254, 218, 0.94) 0 11px, transparent 12px),
+          linear-gradient(to bottom, #b7d7d8 0 41%, #d9e8ca 41% 57%, #8db273 57% 100%);
+        transition: filter 300ms ease, box-shadow 300ms ease;
+      }
+
+      .diorama::before {
+        position: absolute;
+        right: -5%;
+        bottom: 16%;
+        left: -5%;
+        height: 30%;
+        border-radius: 50% 50% 0 0;
+        background: #6f9a64;
+        box-shadow: 0 -10px 0 rgba(255, 255, 255, 0.08) inset;
+        content: '';
+      }
+
+      .diorama::after {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 19%;
+        background: linear-gradient(150deg, transparent 0 35%, rgba(82, 111, 68, 0.33) 36% 38%, transparent 39% 63%, rgba(82, 111, 68, 0.25) 64% 66%, transparent 67%);
+        content: '';
+        opacity: 0.86;
+      }
+
+      .diorama.boss-mode {
+        filter: saturate(1.1) contrast(1.03);
+        box-shadow: 0 0 0 3px rgba(183, 91, 99, 0.23), inset 0 0 70px rgba(64, 27, 55, 0.18);
+      }
+
+      .boss-shade {
+        position: absolute;
+        z-index: 2;
+        inset: 0;
+        background: rgba(46, 24, 48, 0.24);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 260ms ease;
+      }
+
+      .diorama.boss-mode .boss-shade {
+        opacity: 1;
+      }
+
+      .scene-label {
+        position: absolute;
+        z-index: 3;
+        top: 10px;
+        left: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 8px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 999px;
+        background: rgba(255, 253, 248, 0.73);
+        color: var(--forest-deep);
+        font-size: 10px;
+        font-weight: 800;
+        backdrop-filter: blur(6px);
+      }
+
+      .scene-label svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      .party-stage,
+      .monster-stage {
+        position: absolute;
+        z-index: 4;
+        bottom: 29px;
+        display: flex;
+        align-items: flex-end;
+        gap: 4px;
+      }
+
+      .party-stage {
+        left: 11px;
+      }
+
+      .monster-stage {
+        right: 15px;
+      }
+
+      .hero-token,
+      .monster-token {
+        position: relative;
+        display: grid;
+        place-items: center;
+        border: 2px solid rgba(255, 255, 255, 0.82);
+        border-radius: 12px 12px 9px 9px;
+        background: rgba(255, 253, 248, 0.94);
+        box-shadow: 0 4px 0 rgba(40, 72, 58, 0.24), 0 6px 12px rgba(41, 53, 46, 0.12);
+      }
+
+      .hero-token {
+        width: 54px;
+        height: 68px;
+      }
+
+      .monster-token {
+        width: 77px;
+        height: 88px;
+        border-color: rgba(255, 255, 255, 0.92);
+        background: #fbe9d6;
+        box-shadow: 0 5px 0 rgba(115, 86, 181, 0.2), 0 8px 16px rgba(41, 53, 46, 0.18);
+      }
+
+      .token-emoji {
+        display: block;
+        font-size: 31px;
+        line-height: 1;
+        filter: drop-shadow(0 2px 0 rgba(41, 53, 46, 0.11));
+      }
+
+      .monster-token .token-emoji {
+        font-size: 45px;
+      }
+
+      .token-name {
+        position: absolute;
+        right: 3px;
+        bottom: 3px;
+        left: 3px;
+        overflow: hidden;
+        color: var(--forest-deep);
+        font-size: 8px;
+        font-weight: 800;
+        line-height: 1;
+        text-align: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .monster-token .token-name {
+        color: var(--berry);
+        font-size: 9px;
+      }
+
+      .token-level {
+        position: absolute;
+        top: -7px;
+        right: -5px;
+        display: grid;
+        min-width: 17px;
+        height: 17px;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--gold);
+        color: #fff;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 8px;
+        font-weight: 800;
+      }
+
+      .gear-spark {
+        position: absolute;
+        top: -8px;
+        left: -4px;
+        color: var(--rune);
+        font-size: 12px;
+        animation: twinkle 1.8s ease-in-out infinite;
+      }
+
+      .monster-hud {
+        position: absolute;
+        z-index: 6;
+        right: 13px;
+        bottom: 9px;
+        left: 13px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .hp-bar {
+        height: 7px;
+        flex: 1;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 999px;
+        background: rgba(43, 53, 46, 0.22);
+      }
+
+      .hp-bar span {
+        display: block;
         width: 100%;
         height: 100%;
         border-radius: inherit;
-        background: var(--primary);
-        box-shadow: 0 0 14px rgba(83, 58, 253, 0.28);
-        transform: scaleX(1);
-        transform-origin: left center;
-        transition: background 160ms ease, box-shadow 160ms ease;
-        will-change: transform;
+        background: var(--berry);
+        transition: width 200ms ease;
       }
 
-      .timer-fill.is-urgent {
-        background: var(--ruby);
-        box-shadow: 0 0 14px rgba(234, 34, 97, 0.28);
-      }
-
-      .timer-scale {
-        margin-top: 6px;
-        color: var(--ink-muted);
+      .monster-hp-text {
+        min-width: 72px;
+        color: #fff;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         font-size: 9px;
         font-variant-numeric: tabular-nums;
-        letter-spacing: -0.02em;
+        font-weight: 800;
+        text-align: right;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
       }
 
-      .choice-head {
+      .battle-effect-layer {
+        position: absolute;
+        z-index: 8;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .float-number,
+      .reward-floater {
+        position: absolute;
+        z-index: 10;
+        pointer-events: none;
+        animation: floatUp 850ms ease-out forwards;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        font-weight: 900;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
+        white-space: nowrap;
+      }
+
+      .float-number.damage {
+        color: var(--berry);
+      }
+
+      .float-number.crit {
+        color: var(--gold-deep);
+        font-size: 20px;
+        text-shadow: 0 0 10px rgba(250, 237, 191, 0.96), 0 1px 0 #fff;
+      }
+
+      .float-number.heal {
+        color: #2f8a54;
+      }
+
+      .reward-floater {
+        color: var(--gold-deep);
+        animation-name: rewardFly;
+        font-size: 12px;
+      }
+
+      .reward-floater.material {
+        color: var(--forest);
+      }
+
+      .boss-banner {
+        position: absolute;
+        z-index: 12;
+        top: 42px;
+        right: 12px;
+        left: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border: 1px solid rgba(183, 91, 99, 0.55);
+        border-radius: 999px;
+        background: rgba(65, 28, 53, 0.84);
+        color: #fff7ed;
+        font-family: var(--display);
+        font-size: 13px;
+        font-weight: 700;
+        animation: bannerIn 350ms ease both;
+      }
+
+      .boss-banner svg {
+        width: 16px;
+        height: 16px;
+        color: var(--gold-soft);
+      }
+
+      .boss-banner.is-hidden {
+        display: none;
+      }
+
+      .diorama-label {
+        position: absolute;
+        z-index: 5;
+        right: 12px;
+        top: 10px;
+        color: rgba(40, 72, 58, 0.73);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .battle-summary {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
+        margin-top: 9px;
+      }
+
+      .summary-cell {
+        min-height: 51px;
+        padding: 8px 9px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: var(--paper);
+      }
+
+      .summary-cell.boss {
+        border-color: rgba(183, 91, 99, 0.26);
+        background: #fff7f0;
+      }
+
+      .summary-label {
+        display: block;
+        color: var(--ink-soft);
+        font-size: 9px;
+        font-weight: 700;
+        line-height: 1.15;
+        text-transform: uppercase;
+      }
+
+      .summary-value {
+        display: block;
+        margin-top: 4px;
+        color: var(--forest);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        font-weight: 800;
+        letter-spacing: -0.05em;
+      }
+
+      .summary-cell.boss .summary-value {
+        color: var(--berry);
+      }
+
+      .rate-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        margin-top: 9px;
+      }
+
+      .rate-card {
+        padding: 8px 6px;
+        border-radius: 11px;
+        background: var(--forest);
+        color: #fff;
+        text-align: center;
+      }
+
+      .rate-card:nth-child(2) {
+        background: var(--rune);
+      }
+
+      .rate-card:nth-child(3) {
+        background: var(--gold-deep);
+      }
+
+      .rate-card span {
+        display: block;
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 8px;
+        font-weight: 700;
+        line-height: 1.1;
+        text-transform: uppercase;
+      }
+
+      .rate-card strong {
+        display: block;
+        margin-top: 4px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.05em;
+      }
+
+      .boss-gauge {
+        display: none;
+        margin-top: 8px;
+        padding: 7px 9px;
+        border: 1px solid rgba(183, 91, 99, 0.25);
+        border-radius: 10px;
+        background: #fff7f0;
+      }
+
+      .boss-gauge.is-visible {
+        display: block;
+      }
+
+      .boss-gauge-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
-        margin: 25px 0 10px;
-        color: var(--ink-secondary);
-        font-size: 13px;
-        font-weight: 400;
+        color: var(--berry);
+        font-size: 9px;
+        font-weight: 800;
       }
 
-      .choice-hint {
-        color: var(--ink-muted);
+      .boss-gauge-track {
+        height: 6px;
+        margin-top: 5px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #efd5d0;
+      }
+
+      .boss-gauge-track span {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--berry);
+        transition: width 200ms ease;
+      }
+
+      .tab-shell {
+        padding: 10px;
+      }
+
+      .tab-scroll {
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 2px 1px 10px;
+        scrollbar-width: thin;
+      }
+
+      .tab-button {
+        position: relative;
+        display: inline-flex;
+        min-height: 36px;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 10px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink-soft);
+        cursor: pointer;
         font-size: 11px;
-        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: background 150ms ease, color 150ms ease, border-color 150ms ease, transform 150ms ease;
       }
 
-      kbd {
-        display: inline-grid;
-        min-width: 20px;
-        height: 20px;
-        margin-left: 3px;
-        place-items: center;
-        border: 1px solid var(--hairline-input);
-        border-radius: 9999px;
-        color: var(--primary-deep);
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 10px;
-        font-weight: 500;
+      .tab-button:hover {
+        background: var(--paper-2);
+        color: var(--forest);
       }
 
-      .answer-grid {
+      .tab-button.active {
+        border-color: rgba(40, 72, 58, 0.16);
+        background: var(--forest);
+        color: #fff;
+        box-shadow: 0 3px 0 rgba(29, 52, 42, 0.16);
+      }
+
+      .tab-button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .tab-alert {
+        position: absolute;
+        top: -2px;
+        right: 0;
+        width: 6px;
+        height: 6px;
+        border: 1px solid var(--paper);
+        border-radius: 50%;
+        background: var(--berry);
+        box-shadow: 0 0 0 3px rgba(183, 91, 99, 0.12);
+        animation: pulse 1.6s ease-in-out infinite;
+      }
+
+      .tab-content {
+        min-height: 250px;
+        padding: 6px 2px 2px;
+      }
+
+      .content-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 3px 3px 12px;
+      }
+
+      .content-heading h2 {
+        margin: 0;
+        color: var(--forest-deep);
+        font-family: var(--display);
+        font-size: 21px;
+        font-weight: 700;
+        letter-spacing: -0.07em;
+        line-height: 1.15;
+      }
+
+      .content-heading p {
+        max-width: 250px;
+        margin: 4px 0 0;
+        color: var(--ink-soft);
+        font-size: 11px;
+        line-height: 1.4;
+      }
+
+      .tiny-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--paper-2);
+        color: var(--ink-soft);
+        font-size: 9px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .tiny-pill.rune {
+        background: var(--rune-soft);
+        color: var(--rune-deep);
+      }
+
+      .tiny-pill.gold {
+        background: var(--gold-soft);
+        color: var(--gold-deep);
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4 {
         display: grid;
         grid-template-columns: 1fr;
-        gap: 10px;
+        gap: 8px;
       }
 
-      .answer-button {
-        display: flex;
-        min-height: 58px;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 10px 16px;
-        border: 1px solid;
-        border-radius: 9999px;
+      .zone-card,
+      .policy-card,
+      .hero-card,
+      .upgrade-card,
+      .equipment-card,
+      .building-card,
+      .collection-card,
+      .reincarnation-card,
+      .guide-card {
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: var(--paper);
+      }
+
+      .zone-card {
+        position: relative;
+        min-height: 113px;
+        padding: 12px;
+        overflow: hidden;
         cursor: pointer;
-        text-align: left;
-        transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+        transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
       }
 
-      .answer-button:hover:not(:disabled) {
+      .zone-card::after {
+        position: absolute;
+        right: -20px;
+        bottom: -25px;
+        width: 90px;
+        height: 90px;
+        border: 1px solid rgba(40, 72, 58, 0.13);
+        border-radius: 50%;
+        content: '';
+      }
+
+      .zone-card:hover:not(.locked) {
+        border-color: rgba(40, 72, 58, 0.44);
+        box-shadow: 0 6px 14px rgba(40, 72, 58, 0.08);
         transform: translateY(-2px);
       }
 
-      .answer-button:active:not(:disabled) {
-        transform: translateY(1px);
+      .zone-card.selected {
+        border-color: var(--forest);
+        background: var(--forest-soft);
+        box-shadow: 0 3px 0 rgba(40, 72, 58, 0.16);
       }
 
-      .answer-button.fact {
-        border-color: var(--primary);
-        background: var(--primary);
-        color: #fff;
-        box-shadow: 0 8px 18px rgba(83, 58, 253, 0.18);
+      .zone-card.locked {
+        cursor: not-allowed;
+        filter: grayscale(0.25);
+        opacity: 0.62;
       }
 
-      .answer-button.fact:hover:not(:disabled) {
-        border-color: var(--primary-deep);
-        background: var(--primary-deep);
-        box-shadow: 0 10px 22px rgba(83, 58, 253, 0.26);
+      .zone-icon {
+        display: grid;
+        width: 37px;
+        height: 37px;
+        place-items: center;
+        border-radius: 11px;
+        background: var(--cream-deep);
+        font-size: 22px;
       }
 
-      .answer-button.cap {
-        border-color: rgba(234, 34, 97, 0.42);
-        background: var(--canvas);
-        color: var(--ruby);
+      .zone-card h3,
+      .policy-card h3,
+      .upgrade-card h3,
+      .equipment-card h3,
+      .building-card h3,
+      .collection-card h3 {
+        margin: 9px 0 0;
+        color: var(--forest-deep);
+        font-family: var(--display);
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.07em;
+        line-height: 1.1;
       }
 
-      .answer-button.cap:hover:not(:disabled) {
-        border-color: var(--ruby);
-        background: #fff5f8;
-        box-shadow: 0 8px 18px rgba(234, 34, 97, 0.1);
+      .zone-card p,
+      .policy-card p,
+      .upgrade-card p,
+      .equipment-card p,
+      .building-card p,
+      .collection-card p {
+        margin: 4px 0 0;
+        color: var(--ink-soft);
+        font-size: 10px;
+        line-height: 1.4;
       }
 
-      .answer-button:disabled {
-        filter: saturate(0.45);
-        opacity: 0.56;
+      .zone-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 4px 6px;
+        border-radius: 999px;
+        background: rgba(255, 253, 248, 0.78);
+        color: var(--forest);
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
 
-      .answer-content {
+      .zone-card.locked .zone-badge {
+        background: var(--paper-2);
+        color: var(--ink-soft);
+      }
+
+      .policy-card {
+        min-height: 112px;
+        padding: 12px;
+        cursor: pointer;
+        transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+      }
+
+      .policy-card:hover {
+        transform: translateY(-2px);
+      }
+
+      .policy-card.selected {
+        border-color: var(--rune);
+        background: var(--rune-soft);
+      }
+
+      .policy-icon {
+        font-size: 21px;
+      }
+
+      .policy-effect {
+        display: block;
+        margin-top: 8px;
+        color: var(--rune-deep);
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
+      .guide-card {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
+        gap: 9px;
+        margin-top: 10px;
+        padding: 12px;
+        border-color: rgba(201, 150, 53, 0.28);
+        background: var(--gold-soft);
+      }
+
+      .guide-card svg {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 auto;
+        color: var(--gold-deep);
+      }
+
+      .guide-card strong {
+        display: block;
+        color: var(--forest-deep);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .guide-card p {
+        margin: 3px 0 0;
+        color: var(--ink-soft);
+        font-size: 11px;
+        line-height: 1.4;
+      }
+
+      .hero-card {
+        position: relative;
+        padding: 13px;
+        overflow: hidden;
+      }
+
+      .hero-card.in-party {
+        border-color: rgba(40, 72, 58, 0.42);
+        background: var(--forest-soft);
+      }
+
+      .hero-card.locked {
+        opacity: 0.72;
+      }
+
+      .hero-card-top {
+        display: flex;
+        align-items: flex-start;
         gap: 10px;
       }
 
-      .answer-icon {
+      .hero-emblem {
+        position: relative;
         display: grid;
-        width: 30px;
-        height: 30px;
+        width: 48px;
+        height: 48px;
         flex: 0 0 auto;
         place-items: center;
-        border-radius: 9999px;
-        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--paper-2);
+        font-size: 28px;
       }
 
-      .cap .answer-icon {
-        background: rgba(234, 34, 97, 0.08);
+      .in-party .hero-emblem {
+        border-color: rgba(40, 72, 58, 0.22);
+        background: rgba(255, 255, 255, 0.58);
       }
 
-      .answer-icon svg {
-        width: 16px;
-        height: 16px;
-        stroke-width: 1.9;
+      .hero-text {
+        min-width: 0;
       }
 
-      .answer-label {
-        display: block;
-        font-size: 16px;
-        font-weight: 500;
-        letter-spacing: -0.02em;
-        line-height: 1;
+      .hero-text h3 {
+        margin: 0;
+        color: var(--forest-deep);
+        font-family: var(--display);
+        font-size: 17px;
+        font-weight: 700;
+        letter-spacing: -0.07em;
+        line-height: 1.1;
       }
 
-      .answer-subtitle {
+      .hero-role {
         display: block;
         margin-top: 4px;
-        font-size: 11px;
-        font-weight: 300;
-        line-height: 1;
-        opacity: 0.78;
+        color: var(--rune-deep);
+        font-size: 10px;
+        font-weight: 800;
       }
 
-      .answer-key {
-        color: currentColor;
+      .hero-description {
+        margin: 9px 0 0;
+        color: var(--ink-soft);
+        font-size: 10px;
+        line-height: 1.4;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        margin-top: 10px;
+      }
+
+      .hero-stat {
+        padding: 6px 4px;
+        border-radius: 8px;
+        background: var(--paper-2);
+        color: var(--ink-soft);
+        font-size: 8px;
+        text-align: center;
+      }
+
+      .hero-stat strong {
+        display: block;
+        margin-top: 3px;
+        color: var(--forest);
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         font-size: 10px;
         font-variant-numeric: tabular-nums;
-        opacity: 0.7;
       }
 
-      .card-footer {
-        margin-top: 18px;
-        color: var(--ink-muted);
+      .hero-actions,
+      .card-action-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .button,
+      .mini-button {
+        display: inline-flex;
+        min-height: 36px;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1;
+        transition: transform 150ms ease, background 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+      }
+
+      .button {
+        padding: 8px 14px;
+      }
+
+      .mini-button {
+        min-height: 30px;
+        padding: 7px 10px;
+        font-size: 10px;
+      }
+
+      .button:hover:not(:disabled),
+      .mini-button:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      .button.primary,
+      .mini-button.primary {
+        border-color: var(--forest);
+        background: var(--forest);
+        color: #fff;
+        box-shadow: 0 3px 0 rgba(29, 52, 42, 0.16);
+      }
+
+      .button.primary:hover:not(:disabled),
+      .mini-button.primary:hover:not(:disabled) {
+        background: var(--forest-deep);
+      }
+
+      .button.rune,
+      .mini-button.rune {
+        border-color: var(--rune);
+        background: var(--rune);
+        color: #fff;
+        box-shadow: 0 3px 0 rgba(81, 52, 143, 0.14);
+      }
+
+      .button.gold,
+      .mini-button.gold {
+        border-color: var(--gold);
+        background: var(--gold);
+        color: #fff;
+      }
+
+      .button.outline,
+      .mini-button.outline {
+        border-color: var(--line-strong);
+        background: var(--paper);
+        color: var(--forest);
+      }
+
+      .button.danger,
+      .mini-button.danger {
+        border-color: var(--berry);
+        background: var(--berry);
+        color: #fff;
+      }
+
+      .button:disabled,
+      .mini-button:disabled {
+        filter: grayscale(0.2);
+        opacity: 0.46;
+      }
+
+      .button svg,
+      .mini-button svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .cost-line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 5px;
+        color: var(--ink-soft);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 10px;
+        font-variant-numeric: tabular-nums;
+        font-weight: 700;
+      }
+
+      .cost-line .cost-gold {
+        color: var(--gold-deep);
+      }
+
+      .cost-line .cost-material {
+        color: var(--forest);
+      }
+
+      .unlock-note {
+        margin-top: 10px;
+        color: var(--ink-soft);
+        font-size: 10px;
+        line-height: 1.4;
+      }
+
+      .upgrade-card,
+      .equipment-card,
+      .building-card,
+      .collection-card,
+      .reincarnation-card {
+        padding: 12px;
+      }
+
+      .upgrade-card {
+        min-height: 164px;
+      }
+
+      .upgrade-top,
+      .equipment-top,
+      .building-top,
+      .collection-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .level-badge {
+        flex: 0 0 auto;
+        padding: 5px 7px;
+        border-radius: 999px;
+        background: var(--paper-2);
+        color: var(--forest);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 9px;
+        font-variant-numeric: tabular-nums;
+        font-weight: 800;
+      }
+
+      .effect-line {
+        display: block;
+        margin-top: 8px;
+        color: var(--rune-deep);
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
+      .equipment-card {
+        min-height: 160px;
+      }
+
+      .equipment-icon,
+      .building-icon {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 10px;
+        background: var(--rune-soft);
+        font-size: 21px;
+      }
+
+      .equipment-type {
+        display: block;
+        margin-top: 8px;
+        color: var(--rune-deep);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .building-card {
+        min-height: 166px;
+      }
+
+      .building-icon {
+        background: var(--gold-soft);
+      }
+
+      .building-stage {
+        display: block;
+        margin-top: 7px;
+        color: var(--gold-deep);
+        font-size: 9px;
+        font-weight: 800;
+      }
+
+      .village-scene {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        align-items: end;
+        gap: 6px;
+        min-height: 116px;
+        margin-bottom: 12px;
+        padding: 12px 10px 9px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: linear-gradient(to bottom, #c9e0dc 0 53%, #a6c582 53% 100%);
+      }
+
+      .village-house {
+        position: relative;
+        display: flex;
+        height: 44px;
+        align-items: flex-end;
+        justify-content: center;
+        border-radius: 4px 4px 3px 3px;
+        background: var(--cream-deep);
+        box-shadow: 0 3px 0 rgba(40, 72, 58, 0.17);
+        font-size: 17px;
+        filter: saturate(0.72);
+      }
+
+      .village-house::before {
+        position: absolute;
+        top: -14px;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-right: 21px solid transparent;
+        border-bottom: 16px solid var(--berry);
+        border-left: 21px solid transparent;
+        content: '';
+        transform: translateX(-50%);
+      }
+
+      .village-house.level-1 {
+        filter: saturate(0.84);
+      }
+
+      .village-house.level-5 {
+        height: 55px;
+        background: #f7dd9b;
+        filter: saturate(1);
+      }
+
+      .village-house.level-5::before {
+        border-bottom-color: var(--rune);
+      }
+
+      .village-house.level-10 {
+        height: 67px;
+        background: #fff0b9;
+        filter: saturate(1.1) drop-shadow(0 0 4px rgba(201, 150, 53, 0.28));
+      }
+
+      .village-house.level-10::before {
+        border-bottom-color: var(--gold);
+      }
+
+      .village-house span {
+        position: relative;
+        z-index: 1;
+        margin-bottom: 4px;
+      }
+
+      .collection-card {
+        min-height: 116px;
+      }
+
+      .collection-monster {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .collection-emoji {
+        display: grid;
+        width: 35px;
+        height: 35px;
+        place-items: center;
+        border-radius: 11px;
+        background: var(--paper-2);
+        font-size: 21px;
+      }
+
+      .collection-card h3 {
+        margin-top: 0;
+        font-size: 14px;
+      }
+
+      .kill-count {
+        margin-top: 10px;
+        color: var(--forest);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        font-weight: 800;
+      }
+
+      .collection-track {
+        height: 5px;
+        margin-top: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: var(--line);
+      }
+
+      .collection-track span {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--rune);
+      }
+
+      .bonus-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .bonus-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+        background: var(--paper);
+      }
+
+      .bonus-row.claimed {
+        border-color: rgba(40, 72, 58, 0.28);
+        background: var(--forest-soft);
+      }
+
+      .bonus-row strong {
+        display: block;
+        color: var(--forest-deep);
+        font-size: 11px;
+        font-weight: 800;
+      }
+
+      .bonus-row span {
+        display: block;
+        margin-top: 3px;
+        color: var(--ink-soft);
+        font-size: 10px;
+      }
+
+      .bonus-state {
+        min-width: 55px;
+        color: var(--rune-deep);
+        font-size: 9px;
+        font-weight: 800;
+        text-align: right;
+      }
+
+      .reincarnation-card {
+        padding: 18px;
+        border-color: rgba(115, 86, 181, 0.25);
+        background: linear-gradient(145deg, var(--rune-soft), var(--paper));
+      }
+
+      .reincarnation-card.unlocked {
+        border-color: rgba(201, 150, 53, 0.4);
+        background: linear-gradient(145deg, var(--gold-soft), var(--paper));
+      }
+
+      .reincarnation-icon {
+        display: grid;
+        width: 51px;
+        height: 51px;
+        place-items: center;
+        border-radius: 15px;
+        background: var(--rune);
+        color: #fff;
+        font-size: 27px;
+      }
+
+      .reincarnation-card.unlocked .reincarnation-icon {
+        background: var(--gold);
+      }
+
+      .reincarnation-card h3 {
+        margin: 13px 0 0;
+        color: var(--forest-deep);
+        font-family: var(--display);
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: -0.09em;
+      }
+
+      .reincarnation-card p {
+        margin: 7px 0 0;
+        color: var(--ink-soft);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .reincarnation-effects {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        margin-top: 14px;
+      }
+
+      .reincarnation-effect {
+        padding: 9px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.63);
+        color: var(--ink-soft);
         font-size: 10px;
         line-height: 1.35;
       }
 
-      .card-footer strong {
-        color: var(--ink-secondary);
-        font-weight: 500;
-      }
-
-      .insight-row {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-top: 12px;
-      }
-
-      .insight-card {
-        min-height: 88px;
-        padding: 16px;
-        border: 1px solid var(--hairline);
-        border-radius: 8px;
-        background: var(--canvas-soft);
-      }
-
-      .insight-card.cream {
-        background: var(--canvas-cream);
-      }
-
-      .insight-card.dark {
-        background: var(--brand-dark);
-        color: #fff;
-      }
-
-      .insight-icon {
-        color: var(--primary);
-      }
-
-      .dark .insight-icon {
-        color: #b9b9f9;
-      }
-
-      .insight-icon svg {
-        width: 16px;
-        height: 16px;
-      }
-
-      .insight-card strong {
+      .reincarnation-effect strong {
         display: block;
-        margin-top: 8px;
-        font-size: 14px;
-        font-weight: 400;
-        letter-spacing: -0.02em;
-      }
-
-      .insight-card p {
-        margin: 4px 0 0;
-        color: var(--ink-muted);
-        font-size: 11px;
-        line-height: 1.35;
-      }
-
-      .insight-card.dark p {
-        color: rgba(255, 255, 255, 0.66);
+        color: var(--rune-deep);
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
       }
 
       .site-footer {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        max-width: 850px;
-        margin: 50px auto 0;
-        padding: 28px 4px 64px;
-        border-top: 1px solid var(--hairline);
-        color: var(--ink-muted);
+        gap: 12px;
+        margin-top: 24px;
+        padding: 15px 5px 3px;
+        border-top: 1px solid var(--line);
+        color: var(--ink-soft);
+        font-size: 10px;
+        line-height: 1.4;
+      }
+
+      .site-footer strong {
+        color: var(--forest);
+        font-family: var(--display);
+      }
+
+      .modal-backdrop {
+        position: fixed;
+        z-index: 60;
+        inset: 0;
+        display: grid;
+        overflow-y: auto;
+        padding: 14px;
+        place-items: center;
+        background: rgba(29, 52, 42, 0.43);
+        backdrop-filter: blur(9px);
+      }
+
+      .modal-backdrop.is-hidden {
+        display: none;
+      }
+
+      .modal-card {
+        width: min(100%, 440px);
+        padding: 22px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: var(--paper);
+        box-shadow: 0 20px 55px rgba(29, 52, 42, 0.22);
+        animation: modalIn 250ms ease both;
+      }
+
+      .modal-card.dark {
+        background: var(--forest-deep);
+        color: #fff;
+      }
+
+      .modal-icon {
+        display: grid;
+        width: 48px;
+        height: 48px;
+        place-items: center;
+        border-radius: 15px;
+        background: var(--gold-soft);
+        color: var(--gold-deep);
+        font-size: 25px;
+      }
+
+      .modal-card.dark .modal-icon {
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--gold-soft);
+      }
+
+      .modal-card h2 {
+        margin: 14px 0 0;
+        color: var(--forest-deep);
+        font-family: var(--display);
+        font-size: 25px;
+        font-weight: 700;
+        letter-spacing: -0.09em;
+        line-height: 1.12;
+      }
+
+      .modal-card.dark h2 {
+        color: #fff;
+      }
+
+      .modal-card > p {
+        margin: 8px 0 0;
+        color: var(--ink-soft);
+        font-size: 12px;
+        line-height: 1.55;
+      }
+
+      .modal-card.dark > p {
+        color: rgba(255, 255, 255, 0.71);
+      }
+
+      .offline-reward-box {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+        margin-top: 16px;
+      }
+
+      .offline-reward {
+        padding: 10px 5px;
+        border-radius: 11px;
+        background: var(--paper-2);
+        text-align: center;
+      }
+
+      .offline-reward span {
+        display: block;
+        color: var(--ink-soft);
+        font-size: 9px;
+      }
+
+      .offline-reward strong {
+        display: block;
+        margin-top: 5px;
+        color: var(--forest);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 15px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .reset-list {
+        display: grid;
+        gap: 6px;
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 11px;
+        background: var(--paper-2);
+        color: var(--ink-soft);
         font-size: 11px;
         line-height: 1.4;
       }
 
-      .footer-brand {
-        color: var(--ink-secondary);
-        font-weight: 500;
+      .reset-list strong {
+        color: var(--berry);
+        font-weight: 800;
       }
 
-      .feedback-overlay {
-        position: fixed;
-        z-index: 50;
-        inset: 0;
-        display: grid;
-        overflow-y: auto;
-        padding: 16px;
-        place-items: center;
-        background: rgba(13, 37, 61, 0.38);
-        backdrop-filter: blur(12px);
-      }
-
-      .feedback-overlay.is-hidden {
-        display: none;
-      }
-
-      .feedback-panel {
-        width: min(100%, 500px);
-        padding: 24px;
-        border: 1px solid var(--hairline);
-        border-radius: 12px;
-        background: var(--canvas);
-        box-shadow: 0 18px 42px rgba(0, 55, 112, 0.18), 0 4px 10px rgba(0, 55, 112, 0.06);
-        animation: panelIn 260ms cubic-bezier(0.2, 0.8, 0.25, 1.1) both;
-      }
-
-      .feedback-panel.is-correct {
-        border-top: 3px solid var(--primary);
-      }
-
-      .feedback-panel.is-wrong {
-        border-top: 3px solid var(--ruby);
-      }
-
-      .feedback-meta {
-        align-items: flex-start;
-      }
-
-      .feedback-icon {
-        display: grid;
-        width: 42px;
-        height: 42px;
-        place-items: center;
-        border-radius: 9999px;
-        background: #f1f0ff;
-        color: var(--primary);
-      }
-
-      .is-wrong .feedback-icon {
-        background: #fff0f4;
-        color: var(--ruby);
-      }
-
-      .feedback-icon svg {
-        width: 20px;
-        height: 20px;
-        stroke-width: 1.8;
-      }
-
-      .feedback-kicker {
-        margin: 16px 0 0;
-        color: var(--ink-muted);
-        font-size: 10px;
-        font-weight: 500;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-      }
-
-      .feedback-title {
-        margin: 4px 0 0;
-        color: var(--ink);
-        font-size: 38px;
-        font-weight: 300;
-        letter-spacing: -0.075em;
-        line-height: 1;
-      }
-
-      .is-wrong .feedback-title {
-        color: var(--ruby);
-      }
-
-      .feedback-score {
-        padding: 7px 10px;
-        border: 1px solid rgba(83, 58, 253, 0.24);
-        border-radius: 9999px;
-        color: var(--primary-deep);
-        font-size: 10px;
-        font-variant-numeric: tabular-nums;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-
-      .is-wrong .feedback-score {
-        border-color: rgba(234, 34, 97, 0.24);
-        color: var(--ruby);
-      }
-
-      .answer-reveal {
-        margin-top: 20px;
-        padding: 12px 14px;
-        border: 1px solid var(--hairline);
-        border-radius: 8px;
-        background: var(--canvas-soft);
-        color: var(--ink-muted);
-        font-size: 10px;
-        font-weight: 500;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      .answer-reveal strong {
-        color: var(--primary-deep);
-        font-size: 12px;
-        letter-spacing: 0;
-      }
-
-      .is-wrong .answer-reveal strong {
-        color: var(--ruby);
-      }
-
-      .feedback-explanation {
-        margin: 15px 0 0;
-        color: var(--ink-secondary);
-        font-size: 15px;
-        font-weight: 300;
-        line-height: 1.55;
-      }
-
-      .source-note {
+      .modal-actions {
         display: flex;
-        align-items: center;
-        gap: 5px;
-        margin: 12px 0 0;
-        color: var(--ink-muted);
-        font-size: 11px;
-      }
-
-      .source-note svg {
-        width: 13px;
-        height: 13px;
-      }
-
-      .source-note a {
-        color: var(--primary);
-        text-decoration: none;
-      }
-
-      .source-note a:hover {
-        text-decoration: underline;
-      }
-
-      .feedback-actions {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 8px;
-        margin-top: 22px;
-      }
-
-      .primary-action,
-      .secondary-action {
-        display: flex;
-        min-height: 44px;
-        align-items: center;
-        justify-content: center;
         gap: 7px;
-        padding: 8px 16px;
-        border-radius: 9999px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 1;
-        transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+        margin-top: 18px;
       }
 
-      .primary-action {
-        border: 1px solid var(--primary);
-        background: var(--primary);
-        color: #fff;
-      }
-
-      .primary-action:hover {
-        border-color: var(--primary-deep);
-        background: var(--primary-deep);
-        box-shadow: 0 8px 18px rgba(83, 58, 253, 0.18);
-        transform: translateY(-1px);
-      }
-
-      .secondary-action {
-        border: 1px solid var(--hairline-input);
-        background: var(--canvas);
-        color: var(--primary-deep);
-      }
-
-      .secondary-action:hover {
-        border-color: var(--primary);
-        background: #f7f6ff;
-        transform: translateY(-1px);
-      }
-
-      .primary-action svg,
-      .secondary-action svg {
-        width: 16px;
-        height: 16px;
+      .modal-actions .button {
+        flex: 1;
       }
 
       .toast {
         position: fixed;
-        z-index: 70;
-        bottom: 20px;
+        z-index: 80;
+        bottom: 18px;
         left: 50%;
-        max-width: calc(100% - 32px);
+        width: max-content;
+        max-width: calc(100% - 28px);
         padding: 10px 14px;
-        border: 1px solid rgba(83, 58, 253, 0.22);
-        border-radius: 9999px;
-        background: var(--brand-dark);
+        border: 1px solid rgba(250, 237, 191, 0.46);
+        border-radius: 999px;
+        background: var(--forest-deep);
+        box-shadow: 0 8px 22px rgba(29, 52, 42, 0.2);
         color: #fff;
-        font-size: 12px;
-        font-weight: 400;
+        font-size: 11px;
+        font-weight: 700;
         text-align: center;
-        transform: translate(-50%, 14px);
+        transform: translate(-50%, 12px);
         transition: opacity 180ms ease, transform 180ms ease;
       }
 
@@ -1025,168 +1853,282 @@
         transform: translate(-50%, 0);
       }
 
-      .shake {
-        animation: shake 460ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      .hit-flash {
+        animation: hitFlash 240ms ease both;
       }
 
-      .correct-flash .quiz-card {
-        animation: correctFlash 650ms ease-out both;
+      .level-up {
+        animation: levelUp 900ms ease both;
       }
 
-      @keyframes livePulse {
+      .hero-token.level-up::before {
+        position: absolute;
+        z-index: 2;
+        top: -22px;
+        color: var(--gold);
+        content: '✦  LEVEL UP  ✦';
+        font-family: var(--body);
+        font-size: 8px;
+        font-weight: 900;
+        white-space: nowrap;
+        animation: levelSpark 900ms ease both;
+      }
+
+      .new-zone {
+        animation: zoneReveal 700ms ease both;
+      }
+
+      @keyframes pulse {
         0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.45; transform: scale(0.72); }
+        50% { opacity: 0.46; transform: scale(0.76); }
       }
 
-      @keyframes panelIn {
-        from { opacity: 0; transform: translateY(12px) scale(0.97); }
+      @keyframes floatUp {
+        0% { opacity: 0; transform: translateY(8px) scale(0.8); }
+        15% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-48px) scale(1.05); }
+      }
+
+      @keyframes rewardFly {
+        0% { opacity: 0; transform: translate(-5px, 12px) scale(0.8); }
+        18% { opacity: 1; }
+        100% { opacity: 0; transform: translate(70px, -80px) scale(0.74); }
+      }
+
+      @keyframes hitFlash {
+        0%, 100% { filter: none; transform: translateX(0); }
+        35% { filter: brightness(1.5); transform: translateX(-3px) rotate(-2deg); }
+        70% { transform: translateX(3px) rotate(2deg); }
+      }
+
+      @keyframes levelUp {
+        0% { box-shadow: 0 0 0 0 rgba(250, 237, 191, 0); }
+        35% { box-shadow: 0 0 0 8px rgba(250, 237, 191, 0.66), 0 0 24px rgba(201, 150, 53, 0.52); }
+        100% { box-shadow: 0 0 0 0 rgba(250, 237, 191, 0); }
+      }
+
+      @keyframes zoneReveal {
+        0% { opacity: 0.35; transform: translateY(12px) rotate(-1deg); }
+        60% { opacity: 1; transform: translateY(-3px) rotate(0.5deg); }
+        100% { transform: translateY(0) rotate(0); }
+      }
+
+      @keyframes levelSpark {
+        0% { opacity: 0; transform: translateY(9px) scale(0.7); }
+        35% { opacity: 1; transform: translateY(0) scale(1.1); }
+        100% { opacity: 0; transform: translateY(-13px) scale(1); }
+      }
+
+      @keyframes bannerIn {
+        from { opacity: 0; transform: translateY(-10px) scale(0.96); }
         to { opacity: 1; transform: translateY(0) scale(1); }
       }
 
-      @keyframes shake {
-        10%, 90% { transform: translateX(-3px); }
-        20%, 80% { transform: translateX(6px); }
-        30%, 50%, 70% { transform: translateX(-10px); }
-        40%, 60% { transform: translateX(10px); }
+      @keyframes modalIn {
+        from { opacity: 0; transform: translateY(12px) scale(0.96); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
       }
 
-      @keyframes correctFlash {
-        0% { box-shadow: 0 8px 24px rgba(0, 55, 112, 0.08), 0 2px 6px rgba(0, 55, 112, 0.04); }
-        35% { box-shadow: 0 8px 24px rgba(0, 55, 112, 0.08), 0 0 0 4px rgba(83, 58, 253, 0.18), 0 0 40px rgba(83, 58, 253, 0.12); }
-        100% { box-shadow: 0 8px 24px rgba(0, 55, 112, 0.08), 0 2px 6px rgba(0, 55, 112, 0.04); }
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.5; transform: rotate(-10deg) scale(0.82); }
+        50% { opacity: 1; transform: rotate(10deg) scale(1.1); }
       }
 
-      @media (min-width: 640px) {
-        .page-container {
-          width: min(100% - 48px, 1200px);
+      @media (min-width: 520px) {
+        .app-shell {
+          width: min(100% - 36px, 1240px);
         }
 
-        .site-nav {
-          padding-right: 20px;
-        }
-
-        .nav-stat {
+        .stat-chip {
           display: block;
         }
 
-        .answer-grid {
-          grid-template-columns: 1fr 1fr;
+        .save-status {
+          display: inline-flex;
+        }
+
+        .save-status span {
+          display: inline;
+        }
+
+        .stat-chip {
+          min-width: 76px;
+          padding: 5px 7px;
+          font-size: 9px;
+          text-align: right;
+        }
+
+        .stat-chip strong {
+          font-size: 14px;
+        }
+
+        .diorama-panel {
+          padding: 16px;
+        }
+
+        .battle-summary {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        .summary-cell:last-child {
+          grid-column: auto;
+        }
+
+        .grid-2,
+        .grid-3,
+        .grid-4 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (min-width: 760px) {
+        .app-shell {
+          width: min(100% - 64px, 1240px);
+          padding-top: 18px;
+        }
+
+        .topbar {
+          padding-right: 16px;
+          padding-left: 19px;
+        }
+
+        .hero {
+          min-height: 295px;
+          margin-top: 22px;
+          padding-top: 60px;
+        }
+
+        .main-layout {
+          grid-template-columns: minmax(0, 1.16fr) minmax(390px, 0.84fr);
+          align-items: start;
+          gap: 16px;
+          margin-top: 18px;
+        }
+
+        .diorama-panel {
+          grid-row: span 2;
+        }
+
+        .tab-shell {
+          grid-column: 2;
         }
 
         .insight-row {
           grid-template-columns: repeat(3, 1fr);
         }
 
-        .feedback-actions {
-          grid-template-columns: 1fr 1fr;
+        .grid-3 {
+          grid-template-columns: repeat(3, 1fr);
         }
 
-        .is-correct .feedback-actions {
-          grid-template-columns: 1fr;
+        .grid-4 {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        .site-footer {
+          margin-right: 0;
+          margin-left: 0;
         }
       }
 
-      @media (min-width: 900px) {
+      @media (min-width: 1080px) {
         .nav-center {
           display: flex;
+          align-items: center;
+          gap: 24px;
           margin-left: auto;
           margin-right: auto;
+          color: var(--ink-soft);
+          font-size: 11px;
+          font-weight: 700;
         }
 
-        .hero {
-          margin-top: 94px;
+        .nav-center span:first-child {
+          color: var(--forest);
         }
 
-        .quiz-section {
-          margin-top: 70px;
+        .main-layout {
+          grid-template-columns: minmax(0, 1.2fr) minmax(480px, 0.8fr);
         }
       }
 
       @media (max-width: 430px) {
-        .page-container {
-          width: min(100% - 24px, 1200px);
-        }
-
-        .site-nav {
-          padding-left: 13px;
-        }
-
-        .brand-caption {
+        .brand-subtitle,
+        .save-status {
           display: none;
         }
 
-        .brand-name {
-          font-size: 12px;
+        .brand-title {
+          max-width: 145px;
+          font-size: 13px;
         }
 
-        .nav-stat {
-          min-width: 65px;
-          padding-right: 7px;
-          padding-left: 7px;
-          font-size: 9px;
+        .stat-chip span {
+          display: block;
+          overflow: hidden;
+          height: 10px;
+          font-size: 0;
+          line-height: 1;
         }
 
-        .nav-stat strong {
-          font-size: 12px;
+        .stat-chip.gold span::after,
+        .stat-chip.rune span::after,
+        .stat-chip:not(.gold):not(.rune) span::after {
+          font-size: 10px;
         }
 
-        .sound-button {
-          width: 38px;
-          height: 38px;
-        }
+        .stat-chip.gold span::after { content: '🪙'; }
+        .stat-chip.rune span::after { content: '✨'; }
+        .stat-chip:not(.gold):not(.rune) span::after { content: '🏆'; }
 
         .hero {
-          margin-top: 60px;
+          margin-right: -12px;
+          margin-left: -12px;
+          padding-right: 15px;
+          padding-left: 15px;
         }
 
         .hero h1 {
-          font-size: 41px;
-        }
-
-        .hero h1 em {
-          font-size: 25px;
+          font-size: 31px;
         }
 
         .hero-copy {
-          font-size: 14px;
+          font-size: 12px;
         }
 
-        .quiz-section {
-          margin-top: 42px;
+        .battle-summary {
+          grid-template-columns: repeat(2, 1fr);
         }
 
-        .quiz-section-header {
+        .summary-cell:last-child {
+          grid-column: span 2;
+        }
+
+        .rate-card strong {
+          font-size: 10px;
+        }
+
+        .monster-token {
+          width: 70px;
+        }
+
+        .hero-token {
+          width: 48px;
+          height: 64px;
+        }
+
+        .token-emoji {
+          font-size: 27px;
+        }
+
+        .monster-token .token-emoji {
+          font-size: 39px;
+        }
+
+        .site-footer {
           align-items: flex-start;
           flex-direction: column;
-          gap: 7px;
-        }
-
-        .statement-area {
-          min-height: 220px;
-          padding-right: 0;
-          padding-left: 0;
-        }
-
-        .statement {
-          font-size: 25px;
-        }
-
-        .card-footer {
-          align-items: flex-start;
-          flex-direction: column;
-        }
-
-        .feedback-panel {
-          padding: 20px;
-        }
-
-        .feedback-title {
-          font-size: 34px;
-        }
-
-        .feedback-score {
-          max-width: 120px;
-          text-align: right;
+          padding-bottom: 15px;
         }
       }
 
@@ -1204,178 +2146,133 @@
   </head>
 
   <body>
-    <div class="mesh-hero" aria-hidden="true">
-      <svg class="mesh-svg" viewBox="0 0 1440 620" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="meshBlur" x="-30%" y="-40%" width="160%" height="180%">
-            <feGaussianBlur stdDeviation="52" />
-          </filter>
-          <linearGradient id="meshBase" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0" stop-color="#f5e9d4" stop-opacity="0.96" />
-            <stop offset="0.32" stop-color="#f8d7c2" stop-opacity="0.82" />
-            <stop offset="0.62" stop-color="#c9c7ff" stop-opacity="0.84" />
-            <stop offset="1" stop-color="#f4c5df" stop-opacity="0.86" />
-          </linearGradient>
-        </defs>
-        <rect width="1440" height="620" fill="url(#meshBase)" opacity="0.38" />
-        <g filter="url(#meshBlur)" opacity="0.82">
-          <ellipse cx="92" cy="110" rx="280" ry="170" fill="#f5e9d4" />
-          <ellipse cx="390" cy="32" rx="315" ry="190" fill="#ffb287" />
-          <ellipse cx="720" cy="110" rx="300" ry="190" fill="#a9a5ff" />
-          <ellipse cx="1030" cy="42" rx="320" ry="190" fill="#6f63ff" opacity="0.8" />
-          <ellipse cx="1370" cy="160" rx="270" ry="205" fill="#f96bee" opacity="0.68" />
-          <ellipse cx="610" cy="300" rx="380" ry="130" fill="#f6f9fc" opacity="0.54" />
-        </g>
-        <path d="M0 250C150 208 235 340 400 268S675 160 845 265s345 68 595-60v230H0z" fill="#fff" opacity="0.12" />
-      </svg>
-    </div>
+    <div id="app" class="app-shell">
+      <header class="topbar" aria-label="길드 상태 헤더">
+        <a class="brand-lockup" href="./" aria-label="작은 길드 자동원정대 홈">
+          <span class="brand-mark"><i data-lucide="castle" aria-hidden="true"></i></span>
+          <span>
+            <span class="brand-title">작은 길드 자동원정대</span>
+            <span class="brand-subtitle">Tiny Guild Auto Quest</span>
+          </span>
+        </a>
 
-    <div class="page-container">
-      <header class="site-header">
-        <nav class="site-nav" aria-label="Main navigation">
-          <a class="brand-lockup" href="./" aria-label="Fact or Cap home">
-            <span class="brand-mark"><i data-lucide="scan-search" aria-hidden="true"></i></span>
-            <span>
-              <span class="brand-name">FACT OR CAP?</span>
-              <span class="brand-caption">10-second truth infrastructure</span>
-            </span>
-          </a>
-
-          <div class="nav-center" aria-hidden="true">
-            <span>Detector</span>
-            <span>How it works</span>
-            <span>Records</span>
-          </div>
-
-          <div class="nav-actions">
-            <div class="nav-stat">
-              <span>STREAK / COMBO</span>
-              <strong id="streakValue">0</strong>
-            </div>
-            <div class="nav-stat">
-              <span>BEST RECORD</span>
-              <strong id="bestValue">0</strong>
-            </div>
-            <button id="soundToggle" class="sound-button" type="button" aria-label="소리 켜기" aria-pressed="false">
-              <i data-lucide="volume-x" aria-hidden="true"></i>
-            </button>
-          </div>
-        </nav>
+        <div class="header-stats">
+          <div class="stat-chip gold"><span>골드</span><strong id="goldValue">0</strong></div>
+          <div class="stat-chip rune"><span>명성</span><strong id="fameValue">0</strong></div>
+          <div class="stat-chip"><span>최고 스테이지</span><strong id="bestStageValue">숲 1</strong></div>
+          <span id="saveStatus" class="save-status"><i data-lucide="cloud-check" aria-hidden="true"></i><span>저장됨</span></span>
+          <button id="soundToggle" class="sound-button" type="button" aria-label="사운드 켜기" aria-pressed="false"><i data-lucide="volume-x" aria-hidden="true"></i></button>
+        </div>
       </header>
 
-      <main>
-        <section class="hero" aria-labelledby="pageTitle">
-          <span class="hero-kicker">NO TIME TO GOOGLE</span>
-          <h1 id="pageTitle">FACT OR <span class="primary-word">CAP?</span><em>Trust your first read.</em></h1>
-          <p class="hero-copy">
-            AI가 뱉은 것 같은 괴상한 문장을 보고 <strong>진짜인지, 헛소리인지</strong> 골라보세요.<br class="hidden sm:inline" />
-            이번에는 <strong>10초</strong> 동안 생각할 수 있습니다.
-          </p>
+      <section class="hero" aria-labelledby="pageTitle">
+        <span class="hero-badge"><i data-lucide="sparkles" aria-hidden="true"></i> 관전형 방치 RPG</span>
+        <h1 id="pageTitle">작은 길드 <span>자동원정대</span></h1>
+        <p class="hero-copy">당신은 작은 길드의 길드장입니다. <strong>원정대는 자동으로 싸우고, 당신은 선택만 하면 됩니다.</strong><br />원정지와 파티를 고르고, 천천히 자라는 작은 극장을 지켜보세요.</p>
+      </section>
+
+      <main class="main-layout">
+        <section class="panel-shell diorama-panel" aria-labelledby="battleTitle">
+          <div class="section-heading diorama-heading">
+            <div>
+              <span class="eyebrow"><i data-lucide="swords" aria-hidden="true"></i><span id="battleTitle">자동전투 디오라마</span></span>
+              <p id="battleLog" class="small-muted">원정대가 다음 몬스터를 찾고 있습니다.</p>
+            </div>
+            <span class="live-state">LIVE</span>
+          </div>
+
+          <div id="diorama" class="diorama" aria-label="영웅과 몬스터의 자동 전투 장면">
+            <span id="sceneLabel" class="scene-label"><i data-lucide="trees" aria-hidden="true"></i><span>초록 숲</span></span>
+            <span id="dioramaStageLabel" class="diorama-label">STAGE 1</span>
+            <div class="boss-shade" aria-hidden="true"></div>
+            <div id="heroStage" class="party-stage" aria-label="내 파티"></div>
+            <div id="monsterStage" class="monster-stage" aria-label="현재 몬스터"></div>
+            <div id="battleEffectLayer" class="battle-effect-layer" aria-hidden="true"></div>
+            <div id="bossBanner" class="boss-banner is-hidden"><i data-lucide="alert-triangle" aria-hidden="true"></i><span>보스 출현 · 모두 무사히 돌아오길!</span></div>
+            <div class="monster-hud">
+              <div class="hp-bar" aria-hidden="true"><span id="monsterHpFill"></span></div>
+              <span id="monsterHpText" class="monster-hp-text">0 / 0</span>
+            </div>
+          </div>
+
+          <div class="battle-summary" aria-label="현재 진행 정보">
+            <div class="summary-cell"><span class="summary-label">현재 지역</span><strong id="zoneValue" class="summary-value">초록 숲</strong></div>
+            <div class="summary-cell"><span class="summary-label">현재 스테이지</span><strong id="stageValue" class="summary-value">1</strong></div>
+            <div class="summary-cell"><span class="summary-label">몬스터 HP</span><strong id="monsterSummaryValue" class="summary-value">0</strong></div>
+            <div class="summary-cell boss"><span class="summary-label">보스 게이지</span><strong id="bossSummaryValue" class="summary-value">다음 10</strong></div>
+          </div>
+
+          <div id="bossGauge" class="boss-gauge" aria-label="보스 체력 게이지">
+            <div class="boss-gauge-head"><span>보스 도전 게이지</span><strong id="bossGaugeText">0%</strong></div>
+            <div class="boss-gauge-track"><span id="bossGaugeFill"></span></div>
+          </div>
+
+          <div class="rate-grid" aria-label="분당 예상 수익">
+            <div class="rate-card"><span>분당 골드</span><strong id="goldRateValue">0</strong></div>
+            <div class="rate-card"><span>분당 경험치</span><strong id="expRateValue">0</strong></div>
+            <div class="rate-card"><span>분당 재료</span><strong id="materialRateValue">0</strong></div>
+          </div>
         </section>
 
-        <section class="quiz-section" aria-label="Fact or Cap quiz">
-          <div class="quiz-section-header">
-            <span class="section-label">LIVE FACT-CHECK / <span id="roundLabel">ROUND 01 / 18</span></span>
-            <span class="time-label"><i data-lucide="timer" aria-hidden="true"></i>10 sec decision window</span>
-          </div>
-
-          <article id="questionCard" class="quiz-card" aria-live="polite">
-            <div class="quiz-card-top">
-              <span class="case-badge"><i class="live-dot" aria-hidden="true"></i> Fact or AI Bullshit?</span>
-              <span class="case-id" id="questionId">CASE #001</span>
-              <span class="progress-line" aria-label="라운드 진행률"><span id="roundProgressFill"></span></span>
-            </div>
-
-            <div class="statement-area">
-              <div class="statement-quote" aria-hidden="true">“</div>
-              <h2 class="statement" id="statement">로딩 중...</h2>
-            </div>
-
-            <div class="timer-panel" aria-label="10초 타이머">
-              <div class="timer-head">
-                <span>DECISION WINDOW</span>
-                <span id="timerNumber" class="timer-number">10.0s</span>
-              </div>
-              <div class="timer-track" aria-hidden="true"><div id="timerFill" class="timer-fill"></div></div>
-              <div class="timer-scale" aria-hidden="true"><span>10 SEC</span><span>5 SEC</span><span>0 SEC</span></div>
-            </div>
-
-            <div class="choice-head">
-              <span>Lock in your call</span>
-              <span class="choice-hint"><kbd>F</kbd> Fact&nbsp;&nbsp; <kbd>C</kbd> Cap</span>
-            </div>
-
-            <div class="answer-grid">
-              <button id="factButton" class="answer-button fact" type="button" data-answer="fact">
-                <span class="answer-content">
-                  <span class="answer-icon"><i data-lucide="check" aria-hidden="true"></i></span>
-                  <span><span class="answer-label">FACT</span><span class="answer-subtitle">진짜라고 믿는다</span></span>
-                </span>
-                <span class="answer-key" aria-hidden="true">F</span>
-              </button>
-              <button id="capButton" class="answer-button cap" type="button" data-answer="cap">
-                <span class="answer-content">
-                  <span class="answer-icon"><i data-lucide="x" aria-hidden="true"></i></span>
-                  <span><span class="answer-label">CAP</span><span class="answer-subtitle">AI 헛소리다</span></span>
-                </span>
-                <span class="answer-key" aria-hidden="true">C</span>
-              </button>
-            </div>
-
-            <div class="card-footer">
-              <span><strong>Hint:</strong> 그럴듯함과 진실은 가끔 같은 옷을 입습니다.</span>
-              <span>10.0 SEC / ONE TAKE</span>
-            </div>
-          </article>
-
-          <div class="insight-row" aria-label="Quiz stats">
-            <div class="insight-card cream">
-              <span class="insight-icon"><i data-lucide="zap" aria-hidden="true"></i></span>
-              <strong>Fast decisions</strong>
-              <p>10초 안에 첫인상을 믿어보세요.</p>
-            </div>
-            <div class="insight-card">
-              <span class="insight-icon"><i data-lucide="layers-3" aria-hidden="true"></i></span>
-              <strong>18 weird claims</strong>
-              <p>팩트 9개, AI 캡 9개를 섞었습니다.</p>
-            </div>
-            <div class="insight-card dark">
-              <span class="insight-icon"><i data-lucide="trophy" aria-hidden="true"></i></span>
-              <strong>Build your record</strong>
-              <p>최고 연속 기록은 브라우저에 저장됩니다.</p>
-            </div>
-          </div>
+        <section class="panel-shell tab-shell" aria-label="길드 관리 패널">
+          <nav id="tabBar" class="tab-scroll" aria-label="길드 메뉴"></nav>
+          <div id="tabContent" class="tab-content"></div>
         </section>
       </main>
 
       <footer class="site-footer">
-        <span><span class="footer-brand">FACT OR CAP?</span> / made for suspicious minds</span>
-        <span>Source-aware trivia · Round fast, think weird.</span>
+        <span><strong>작은 길드 자동원정대</strong> · Tiny Guild Auto Quest</span>
+        <span>컨트롤 없이 선택만 · 로컬 저장 · 무료 플레이</span>
       </footer>
     </div>
 
-    <div id="feedbackOverlay" class="feedback-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
-      <section id="feedbackPanel" class="feedback-panel">
-        <div class="feedback-meta">
-          <div>
-            <div id="feedbackIcon" class="feedback-icon"><i data-lucide="sparkles" aria-hidden="true"></i></div>
-            <p id="feedbackKicker" class="feedback-kicker">You read the matrix</p>
-            <h2 id="feedbackTitle" class="feedback-title">NICE CALL!</h2>
-          </div>
-          <div id="feedbackScore" class="feedback-score">+1 streak</div>
-        </div>
+    <div id="welcomeModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+      <section class="modal-card">
+        <div class="modal-icon">🏕️</div>
+        <h2 id="welcomeTitle">작은 길드에 오신 걸 환영합니다</h2>
+        <p>당신은 작은 길드의 길드장입니다. 원정대는 자동으로 싸우고, 당신은 선택만 하면 됩니다.</p>
+        <div class="guide-card"><i data-lucide="lightbulb" aria-hidden="true"></i><div><strong>첫 10분 안내</strong><p>처음에는 초록 숲에서 골드를 모으고, 첫 업그레이드가 가능해지면 업그레이드 탭을 확인해 보세요. 10스테이지마다 보스가 기다립니다.</p></div></div>
+        <div class="modal-actions"><button id="welcomeClose" class="button primary" type="button"><i data-lucide="play" aria-hidden="true"></i> 원정 시작</button></div>
+      </section>
+    </div>
 
-        <div id="answerReveal" class="answer-reveal">
-          <span>THE ANSWER</span>
-          <strong id="correctAnswer">FACT · 진짜</strong>
+    <div id="offlineModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="offlineTitle">
+      <section class="modal-card">
+        <div class="modal-icon">🎁</div>
+        <h2 id="offlineTitle">원정대가 돌아왔어요</h2>
+        <p id="offlineSummary">마지막 접속 이후 조용히 쌓인 보상입니다. 오프라인 효율은 온라인 예상 보상의 70%이며 최대 120분까지 계산됩니다.</p>
+        <div class="offline-reward-box">
+          <div class="offline-reward"><span>누적 시간</span><strong id="offlineTimeValue">0분</strong></div>
+          <div class="offline-reward"><span>골드</span><strong id="offlineGoldValue">0</strong></div>
+          <div class="offline-reward"><span>경험치</span><strong id="offlineExpValue">0</strong></div>
         </div>
-        <p id="feedbackExplanation" class="feedback-explanation"></p>
-        <p id="sourceNote" class="source-note" hidden><i data-lucide="external-link" aria-hidden="true"></i><a id="sourceLink" href="#" target="_blank" rel="noreferrer noopener">Source</a></p>
+        <div id="offlineMaterialValue" class="guide-card"><i data-lucide="package" aria-hidden="true"></i><div><strong>재료 보관함</strong><p>나무와 가죽이 길드 창고에 정리되었습니다.</p></div></div>
+        <div class="modal-actions"><button id="offlineClaim" class="button gold" type="button"><i data-lucide="gift" aria-hidden="true"></i> 보상 받기</button></div>
+      </section>
+    </div>
 
-        <div class="feedback-actions">
-          <button id="continueButton" class="primary-action" type="button"><i data-lucide="arrow-right" aria-hidden="true"></i><span>다음 문제</span></button>
-          <button id="shareButton" class="secondary-action" type="button"><i data-lucide="share-2" aria-hidden="true"></i><span>카카오톡으로 내 점수 자랑하기</span></button>
+    <div id="bossFailModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="bossFailTitle">
+      <section class="modal-card">
+        <div class="modal-icon">🩹</div>
+        <h2 id="bossFailTitle">이번 보스전은 여기까지</h2>
+        <p id="bossFailReason">원정대가 잠시 쉬어가고 있습니다. 진행을 잃지 않고, 다음 전투를 준비할 수 있습니다.</p>
+        <div class="reset-list"><span><strong>실패 이유</strong>를 확인하고 방침이나 업그레이드를 바꿔보세요.</span><span>골드와 도감 기록은 그대로 유지됩니다.</span></div>
+        <div class="modal-actions"><button id="bossFailClose" class="button primary" type="button"><i data-lucide="coffee" aria-hidden="true"></i> 다시 지켜보기</button><button id="bossFailUpgrade" class="button outline" type="button"><i data-lucide="arrow-up-circle" aria-hidden="true"></i> 업그레이드</button></div>
+      </section>
+    </div>
+
+    <div id="rebirthModal" class="modal-backdrop is-hidden" role="dialog" aria-modal="true" aria-labelledby="rebirthTitle">
+      <section class="modal-card dark">
+        <div class="modal-icon">✨</div>
+        <h2 id="rebirthTitle">첫 번째 환생을 준비할까요?</h2>
+        <p>고대 유적의 잠든 석상을 넘으면 새로운 원정의 문이 열립니다. 환생은 명성을 남기고 일부 진행을 다시 시작합니다.</p>
+        <div class="offline-reward-box">
+          <div class="offline-reward"><span>예상 명성</span><strong id="rebirthFameValue">+0</strong></div>
+          <div class="offline-reward"><span>골드 보너스</span><strong id="rebirthGoldBonus">+0%</strong></div>
+          <div class="offline-reward"><span>공격 보너스</span><strong id="rebirthAttackBonus">+0%</strong></div>
         </div>
+        <div class="reset-list"><span><strong>초기화:</strong> 현재 골드, 영웅 경험치/레벨, 지역 진행</span><span><strong>일부 유지:</strong> 영웅 해금, 업그레이드, 마을 건물, 도감</span><span><strong>장비:</strong> 현재 레벨의 절반을 남기고 정리됩니다.</span></div>
+        <div class="modal-actions"><button id="rebirthCancel" class="button outline" type="button">조금 더 원정하기</button><button id="rebirthConfirm" class="button gold" type="button"><i data-lucide="rotate-ccw" aria-hidden="true"></i> 환생하기</button></div>
       </section>
     </div>
 
@@ -1387,549 +2284,1217 @@
       (() => {
         'use strict';
 
-        const QUESTION_TIME = 10000;
-        const BEST_SCORE_KEY = 'three-second-detector-best';
+        const SAVE_KEY = 'tiny-guild-auto-quest-save-v1';
+        const TICK_MS = 1000;
+        const OFFLINE_CAP_MINUTES = 120;
+        const OFFLINE_EFFICIENCY = 0.7;
 
-        const questionBank = [
-          {
-            id: 1,
-            text: '우주에서는 트림을 할 수 없다.',
-            isFact: true,
-            explanation: '팩트! 무중력에서는 위 속 기체와 액체가 층으로 나뉘지 않아, 지구처럼 깔끔하게 트림하기 어렵습니다.',
-          },
-          {
-            id: 2,
-            text: '해파리는 뇌와 심장이 모두 없다.',
-            isFact: true,
-            explanation: '팩트! 해파리는 신경망으로 몸을 움직이고, 온몸으로 산소를 흡수해서 뇌와 심장이 필요 없습니다.',
-          },
-          {
-            id: 3,
-            text: '프랑스 샤토뇌프뒤파프에는 비행접시 착륙 금지법이 있다.',
-            isFact: true,
-            explanation: '팩트! 1954년에 만들어진 조례로, 마을 포도밭에 UFO가 착륙하는 것을 금지한다고 실제로 적혀 있습니다.',
-          },
-          {
-            id: 4,
-            text: '바나나는 식물학적으로 베리이고, 딸기는 베리가 아니다.',
-            isFact: true,
-            explanation: '팩트! 식물학적 베리의 조건을 바나나는 충족하지만, 딸기는 여러 씨방이 모인 집합과일입니다.',
-          },
-          {
-            id: 5,
-            text: '나폴레옹은 토마토 알레르기 때문에 케첩을 법으로 사형시켰다.',
-            isFact: false,
-            explanation: '캡! 나폴레옹의 알레르기와 케첩 처형 기록은 없습니다. AI가 역사극 톤으로 만든 완벽한 헛소리예요.',
-          },
-          {
-            id: 6,
-            text: '클레오파트라는 와이파이 비밀번호를 매일 파피루스에 기록했다.',
-            isFact: false,
-            explanation: '캡! 와이파이는 20세기에 등장했습니다. 고대 이집트의 파피루스와 연결한 시대착오 밈입니다.',
-          },
-          {
-            id: 7,
-            text: '문어는 잉크를 뿜을 때마다 기억 하나를 잃는다.',
-            isFact: false,
-            explanation: '캡! 문어의 잉크는 포식자를 속이는 방어 수단이지, 기억을 지우는 생물학적 리셋 버튼이 아닙니다.',
-          },
-          {
-            id: 8,
-            text: '에펠탑은 비가 오면 6cm 낮아지도록 설계됐다.',
-            isFact: false,
-            explanation: '캡! 철은 온도에 따라 팽창·수축하지만, 비가 오면 6cm 낮아지도록 설계했다는 기록은 없습니다.',
-          },
-          {
-            id: 9,
-            text: '웜뱃은 정육면체 모양의 똥을 싼다.',
-            isFact: true,
-            explanation: '팩트! 웜뱃의 장은 부위마다 탄성이 달라 배설물을 큐브 모양으로 빚습니다. 굴러가지 않아 영역 표시에도 유리합니다.',
-            source: { label: 'Smithsonian Magazine', url: 'https://www.smithsonianmag.com/smart-news/why-wombats-make-cube-shaped-poos-180970847/' },
-          },
-          {
-            id: 10,
-            text: '금성에서는 하루가 1년보다 길다.',
-            isFact: true,
-            explanation: '팩트! 금성의 자전 하루는 지구 기준 243일이고, 태양을 한 바퀴 도는 1년은 약 225일입니다.',
-            source: { label: 'NASA · Venus 10 Things', url: 'https://solarsystem.nasa.gov/module/89/' },
-          },
-          {
-            id: 11,
-            text: '상어는 나무보다 먼저 지구에 등장했다.',
-            isFact: true,
-            explanation: '팩트! 상어 계통은 약 4억 5천만 년 전부터 존재했고, 나무가 생기기 전 고대 바다에서 이미 헤엄치고 있었습니다.',
-            source: { label: 'Natural History Museum', url: 'https://www.nhm.ac.uk/discover/shark-evolution-a-450-million-year-timeline.html' },
-          },
-          {
-            id: 12,
-            text: '문어에게는 심장이 세 개 있고 피가 파랗다.',
-            isFact: true,
-            explanation: '팩트! 아가미로 피를 보내는 심장 두 개와 온몸으로 순환시키는 심장 하나가 있으며, 헤모시아닌 때문에 피가 파랗습니다.',
-            source: { label: 'BBC Earth · Octopus facts', url: 'https://www.bbcearth.com/factfiles/animals/molluscs/octopus' },
-          },
-          {
-            id: 13,
-            text: '바나나는 아주 조금 방사능을 내뿜는다.',
-            isFact: true,
-            explanation: '팩트! 바나나의 칼륨에는 극소량의 칼륨-40이 들어 있어 미세한 방사능이 측정됩니다. 일상적인 섭취는 안전합니다.',
-            source: { label: 'U.S. Department of Energy', url: 'https://www.energy.gov/ne/articles/5-radioactive-products-we-use-every-day' },
-          },
-          {
-            id: 14,
-            text: '아인슈타인은 와이파이 암호화를 피하려고 상대성이론을 발명했다.',
-            isFact: false,
-            explanation: '캡! 상대성이론은 20세기 초 물리학 이론이고, 와이파이와 암호화는 훨씬 뒤에 등장했습니다. 시대를 섞은 AI식 농담입니다.',
-          },
-          {
-            id: 15,
-            text: '고대 이집트 피라미드 노동자들은 월급으로 파인애플 피자를 받았다.',
-            isFact: false,
-            explanation: '캡! 피자와 파인애플의 역사를 고대 이집트까지 당겨온 시대착오 거짓말입니다. 맛의 논쟁만 남습니다.',
-          },
-          {
-            id: 16,
-            text: '펭귄은 깃털 속에 달빛을 저장했다가 낮에 체온으로 방출한다.',
-            isFact: false,
-            explanation: '캡! 펭귄의 깃털은 보온과 방수에 도움을 주지만 달빛 배터리 기능은 없습니다. AI가 만든 시적인 헛소리입니다.',
-          },
-          {
-            id: 17,
-            text: '마리 퀴리는 자신이 키우던 고양이 이름을 따서 라듐을 명명했다.',
-            isFact: false,
-            explanation: '캡! 라듐이라는 이름은 라틴어로 광선을 뜻하는 말에서 왔습니다. 고양이 유래설은 귀엽지만 사실이 아닙니다.',
-          },
-          {
-            id: 18,
-            text: '사하라 사막은 춘분마다 하루 동안 보라색으로 변한다.',
-            isFact: false,
-            explanation: '캡! 사하라의 색과 풍경은 모래, 암석, 빛에 따라 달라지지만 매년 보라색으로 변하는 광물층은 없습니다.',
-          },
-        ];
-
-        const state = {
-          deck: [],
-          currentIndex: 0,
-          streak: 0,
-          best: loadBestScore(),
-          timerFrame: null,
-          timerStartedAt: 0,
-          timerRunning: false,
-          answered: false,
-          soundOn: false,
-          lastRunScore: 0,
-          feedbackIsCorrect: false,
-          feedbackIsFinal: false,
-          toastTimeout: null,
-          audioContext: null,
+        const MATERIAL_LABELS = {
+          wood: '나무',
+          leather: '가죽',
+          iron: '철광석',
+          gem: '보석',
+          rune: '룬',
+          relic: '유물 조각',
         };
 
-        const elements = {
-          app: document.querySelector('.page-container'),
-          streakValue: document.getElementById('streakValue'),
-          bestValue: document.getElementById('bestValue'),
-          soundToggle: document.getElementById('soundToggle'),
-          roundLabel: document.getElementById('roundLabel'),
-          roundProgressFill: document.getElementById('roundProgressFill'),
-          questionCard: document.getElementById('questionCard'),
-          questionId: document.getElementById('questionId'),
-          statement: document.getElementById('statement'),
-          timerNumber: document.getElementById('timerNumber'),
-          timerFill: document.getElementById('timerFill'),
-          factButton: document.getElementById('factButton'),
-          capButton: document.getElementById('capButton'),
-          feedbackOverlay: document.getElementById('feedbackOverlay'),
-          feedbackPanel: document.getElementById('feedbackPanel'),
-          feedbackIcon: document.getElementById('feedbackIcon'),
-          feedbackKicker: document.getElementById('feedbackKicker'),
-          feedbackTitle: document.getElementById('feedbackTitle'),
-          feedbackScore: document.getElementById('feedbackScore'),
-          correctAnswer: document.getElementById('correctAnswer'),
-          feedbackExplanation: document.getElementById('feedbackExplanation'),
-          sourceNote: document.getElementById('sourceNote'),
-          sourceLink: document.getElementById('sourceLink'),
-          continueButton: document.getElementById('continueButton'),
-          shareButton: document.getElementById('shareButton'),
+        const MATERIAL_ICONS = {
+          wood: '🪵',
+          leather: '🧵',
+          iron: '⛓️',
+          gem: '💎',
+          rune: '🔮',
+          relic: '🪶',
+        };
+
+        const HERO_DEFS = {
+          roan: { id: 'roan', name: '방패병 로안', role: '전열 수호자', emoji: '🛡️', baseHp: 250, baseAttack: 15, attackSpeed: 0.8, crit: 0.04, description: '높은 HP와 피해 감소 패시브로 파티의 첫 줄을 지킵니다.', unlock: null },
+          mira: { id: 'mira', name: '궁수 미라', role: '숲의 명사수', emoji: '🏹', baseHp: 130, baseAttack: 20, attackSpeed: 1.45, crit: 0.1, description: '빠르게 쏘며 일반 몬스터를 처치할 때 작은 보너스를 얻습니다.', unlock: null },
+          theo: { id: 'theo', name: '검사 테오', role: '균형형 검객', emoji: '⚔️', baseHp: 180, baseAttack: 23, attackSpeed: 1, crit: 0.08, description: '어디서든 안정적인 능력을 내고 보스에게 추가 피해를 줍니다.', unlock: null },
+          sera: { id: 'sera', name: '사제 세라', role: '회복의 작은 성가', emoji: '🕯️', baseHp: 145, baseAttack: 13, attackSpeed: 0.72, crit: 0.04, description: '일정 시간마다 가장 약한 아군을 회복합니다.', unlock: { gold: 360, wood: 80, leather: 20 } },
+          nia: { id: 'nia', name: '도적 니아', role: '행운의 그림자', emoji: '🗡️', baseHp: 125, baseAttack: 25, attackSpeed: 1.2, crit: 0.2, description: '치명타와 재료 드롭률에 보너스를 더합니다.', unlock: { gold: 620, leather: 100, iron: 20 } },
+          ordyn: { id: 'ordyn', name: '마법사 오르딘', role: '룬 폭풍술사', emoji: '🧙', baseHp: 115, baseAttack: 52, attackSpeed: 0.43, crit: 0.12, description: '느리지만 강한 광역 공격으로 전장을 한 번에 흔듭니다.', unlock: { gold: 980, gem: 25, rune: 8 } },
+        };
+
+        const ZONES = {
+          forest: {
+            id: 'forest', name: '초록 숲', icon: '🌲', description: '작은 버섯과 큰 꿈이 자라는 시작 지역', rewardText: '나무 · 가죽', rewardKeys: ['wood', 'leather'], hpMultiplier: 1, rewardMultiplier: 1, next: 'mine',
+            monsters: [
+              { id: 'slime', name: '슬라임', emoji: '🟢', baseHp: 48, attack: 10, baseGold: 14 },
+              { id: 'wolf', name: '숲 늑대', emoji: '🐺', baseHp: 62, attack: 14, baseGold: 18 },
+              { id: 'goblin', name: '고블린', emoji: '👺', baseHp: 72, attack: 17, baseGold: 23 },
+            ],
+            boss: { id: 'mushroomKing', name: '거대 버섯왕', emoji: '🍄', attack: 28, baseGold: 240 },
+          },
+          mine: {
+            id: 'mine', name: '오래된 광산', icon: '⛏️', description: '광석벌레가 반짝이는 길을 지키는 깊은 갱도', rewardText: '철광석 · 보석', rewardKeys: ['iron', 'gem'], hpMultiplier: 2.2, rewardMultiplier: 1.5, next: 'ruins',
+            monsters: [
+              { id: 'bat', name: '동굴 박쥐', emoji: '🦇', baseHp: 135, attack: 25, baseGold: 38 },
+              { id: 'oreWorm', name: '광석벌레', emoji: '🐛', baseHp: 158, attack: 31, baseGold: 44 },
+              { id: 'stoneGolem', name: '돌골렘', emoji: '🗿', baseHp: 210, attack: 38, baseGold: 55 },
+            ],
+            boss: { id: 'ironGolem', name: '철갑 골렘', emoji: '🤖', attack: 62, baseGold: 720 },
+          },
+          ruins: {
+            id: 'ruins', name: '고대 유적', icon: '🏛️', description: '잠든 룬과 오래된 비밀이 숨 쉬는 마지막 길', rewardText: '룬 · 유물 조각', rewardKeys: ['rune', 'relic'], hpMultiplier: 5.4, rewardMultiplier: 2.3, next: null,
+            monsters: [
+              { id: 'skeleton', name: '해골', emoji: '💀', baseHp: 350, attack: 52, baseGold: 88 },
+              { id: 'runeSpirit', name: '룬 정령', emoji: '🔮', baseHp: 405, attack: 60, baseGold: 104 },
+              { id: 'mimic', name: '미믹', emoji: '📦', baseHp: 480, attack: 68, baseGold: 124 },
+            ],
+            boss: { id: 'sleepingStatue', name: '잠든 석상', emoji: '🗿', attack: 110, baseGold: 1600 },
+          },
+        };
+
+        const POLICIES = {
+          balanced: { id: 'balanced', name: '균형 전투', icon: '⚖️', summary: '보정 없음. 길드의 기본 작전입니다.', speed: 1, defense: 0, healing: 1, reward: 1, boss: 1, damageTaken: 1 },
+          stable: { id: 'stable', name: '안정 전투', icon: '🪵', summary: '방어력과 회복량 +20%, 진행 속도 -18%.', speed: 0.82, defense: 0.2, healing: 1.2, reward: 1, boss: 1, damageTaken: 0.82 },
+          fast: { id: 'fast', name: '빠른 사냥', icon: '🌬️', summary: '공격속도와 사냥 속도 +35%, 받는 피해 +18%.', speed: 1.35, defense: -0.08, healing: 1, reward: 1.02, boss: 1, damageTaken: 1.18 },
+          treasure: { id: 'treasure', name: '보물 우선', icon: '🪙', summary: '골드·재료 +35%, 보스 피해 -25%.', speed: 0.95, defense: 0, healing: 1, reward: 1.35, boss: 0.75, damageTaken: 1 },
+          boss: { id: 'boss', name: '보스 집중', icon: '👑', summary: '보스 피해 +45%, 일반 사냥 보상 -18%.', speed: 0.9, defense: 0, healing: 1, reward: 0.82, boss: 1.45, damageTaken: 1 },
+        };
+
+        const UPGRADE_DEFS = [
+          { id: 'oldSword', name: '낡은 검 연마', description: '모든 영웅의 기본 공격력을 조금 올립니다.', max: 10, baseCost: 35, growth: 1.15, effect: '공격력 +7% / 레벨', kind: 'attack' },
+          { id: 'sturdyShield', name: '튼튼한 방패', description: '전열이 버티는 힘을 키워 받는 피해를 줄입니다.', max: 10, baseCost: 42, growth: 1.22, effect: '방어력 +5% / 레벨', kind: 'defense' },
+          { id: 'quickBow', name: '빠른 활시위', description: '원정대의 공격 빈도를 올립니다.', max: 10, baseCost: 48, growth: 1.15, effect: '공격속도 +5% / 레벨', kind: 'attackSpeed' },
+          { id: 'smallPrayer', name: '작은 회복 기도', description: '세라의 회복과 야영 회복을 강화합니다.', max: 10, baseCost: 55, growth: 1.22, effect: '회복량 +8% / 레벨', kind: 'healing' },
+          { id: 'lootBag', name: '전리품 가방', description: '몬스터가 떨어뜨리는 골드를 더 잘 챙깁니다.', max: 10, baseCost: 60, growth: 1.17, effect: '골드 +5% / 레벨', kind: 'gold' },
+          { id: 'gatheringTraining', name: '채집 훈련', description: '나무와 광석을 놓치지 않는 손놀림입니다.', max: 10, baseCost: 58, growth: 1.18, effect: '재료 +5% / 레벨', kind: 'materials' },
+          { id: 'bossResearch', name: '보스 연구', description: '큰 적의 빈틈을 공부해 보스 피해를 높입니다.', max: 8, baseCost: 95, growth: 1.20, effect: '보스 피해 +8% / 레벨', kind: 'boss' },
+          { id: 'camping', name: '야영 기술', description: '전투 전후 파티의 최대 HP를 끌어올립니다.', max: 10, baseCost: 52, growth: 1.22, effect: '최대 HP +6% / 레벨', kind: 'hp' },
+          { id: 'guildBanner', name: '길드 깃발', description: '작은 깃발 하나가 모두의 사기를 북돋습니다.', max: 8, baseCost: 120, growth: 1.22, effect: '전체 능력 +3% / 레벨', kind: 'all' },
+          { id: 'autoSorter', name: '자동 분류함', description: '보상 상자가 알아서 정리되어 누락이 줄어듭니다.', max: 8, baseCost: 110, growth: 1.17, effect: '보상량 +3% / 레벨', kind: 'reward' },
+          { id: 'ironWeapons', name: '철제 무기', description: '목검의 시대를 지나 단단한 공격을 준비합니다.', max: 10, baseCost: 105, growth: 1.15, effect: '공격력 +10% / 레벨', kind: 'attack' },
+          { id: 'leatherArmor', name: '가죽 갑옷', description: '가죽을 잘 꿰매 파티의 생존력을 올립니다.', max: 10, baseCost: 105, growth: 1.22, effect: '방어력·HP +8% / 레벨', kind: 'survival' },
+          { id: 'critTraining', name: '치명타 훈련', description: '약점을 보는 눈을 훈련합니다.', max: 10, baseCost: 130, growth: 1.22, effect: '치명타 확률 +2% / 레벨', kind: 'crit' },
+          { id: 'treasureAppraisal', name: '보물 감정', description: '쓸모없는 반짝임도 값어치를 알아봅니다.', max: 10, baseCost: 125, growth: 1.17, effect: '골드 +5% / 레벨', kind: 'gold' },
+          { id: 'formation', name: '전열 유지', description: '로안 뒤에 숨는 법을 모두가 익힙니다.', max: 10, baseCost: 118, growth: 1.22, effect: '방어력 +5% / 레벨', kind: 'defense' },
+          { id: 'backlineFocus', name: '후열 집중', description: '후열의 시선과 화살을 한곳에 모읍니다.', max: 10, baseCost: 118, growth: 1.15, effect: '공격력 +5% / 레벨', kind: 'attack' },
+          { id: 'forestMap', name: '숲길 지도', description: '초록 숲의 숨은 채집 포인트를 표시합니다.', max: 6, baseCost: 85, growth: 1.18, effect: '초록 숲 재료 +8% / 레벨', kind: 'forestMaterials' },
+          { id: 'mineCart', name: '광산 수레', description: '오래된 광산에서 수레가 재료를 실어옵니다.', max: 6, baseCost: 150, growth: 1.18, effect: '광산 재료 +8% / 레벨', kind: 'mineMaterials' },
+          { id: 'runeDecode', name: '룬 해독', description: '고대 유적의 룬과 조각을 읽는 기술입니다.', max: 6, baseCost: 230, growth: 1.18, effect: '유적 재료 +8% / 레벨', kind: 'ruinsMaterials' },
+          { id: 'trainingGroundExpansion', name: '훈련장 확장', description: '영웅들이 더 넓은 마당에서 경험을 쌓습니다.', max: 8, baseCost: 180, growth: 1.22, effect: '경험치 +8% / 레벨', kind: 'exp' },
+          { id: 'blacksmithExpansion', name: '대장간 확장', description: '장비 강화 비용을 줄이고 공격을 보탭니다.', max: 8, baseCost: 190, growth: 1.22, effect: '강화 비용 -4%, 공격 +3%', kind: 'blacksmith' },
+          { id: 'adventurerBoard', name: '모험가 게시판', description: '마을에 모인 소문이 원정 보상을 부릅니다.', max: 8, baseCost: 210, growth: 1.22, effect: '경험치·보상 +4% / 레벨', kind: 'board' },
+          { id: 'smallSanctuary', name: '작은 성소', description: '환생 때 오래 남는 명성의 씨앗을 심습니다.', max: 8, baseCost: 250, growth: 1.22, effect: '환생 명성 +6% / 레벨', kind: 'sanctuary' },
+          { id: 'guildAccounting', name: '길드 회계', description: '금고를 정리해 골드 흐름을 안정화합니다.', max: 8, baseCost: 215, growth: 1.17, effect: '골드 +6% / 레벨', kind: 'gold' },
+        ];
+
+        const EQUIPMENT_DEFS = [
+          { id: 'woodenSword', name: '모험가의 목검', type: '무기', icon: '🪵', material: 'wood', baseGold: 70, baseMaterial: 14, stat: 'attack', effect: '공격력 +4%' },
+          { id: 'hunterBow', name: '숲바람 활', type: '무기', icon: '🏹', material: 'wood', baseGold: 95, baseMaterial: 18, stat: 'speed', effect: '공격속도 +4%' },
+          { id: 'ironBlade', name: '광산 철검', type: '무기', icon: '⚔️', material: 'iron', baseGold: 180, baseMaterial: 22, stat: 'attack', effect: '공격력 +7%' },
+          { id: 'runeStaff', name: '새벽 룬 지팡이', type: '무기', icon: '🪄', material: 'rune', baseGold: 360, baseMaterial: 15, stat: 'boss', effect: '보스 피해 +7%' },
+          { id: 'leatherVest', name: '부드러운 가죽 조끼', type: '방어구', icon: '🧥', material: 'leather', baseGold: 70, baseMaterial: 14, stat: 'hp', effect: '최대 HP +5%' },
+          { id: 'ironMail', name: '철 조각 사슬갑옷', type: '방어구', icon: '🛡️', material: 'iron', baseGold: 190, baseMaterial: 24, stat: 'defense', effect: '방어력 +5%' },
+          { id: 'mushroomCloak', name: '버섯왕 망토', type: '방어구', icon: '🧣', material: 'wood', baseGold: 230, baseMaterial: 32, stat: 'healing', effect: '회복량 +6%' },
+          { id: 'relicArmor', name: '유적 수호 갑주', type: '방어구', icon: '🥋', material: 'relic', baseGold: 480, baseMaterial: 12, stat: 'all', effect: '전체 능력 +4%' },
+          { id: 'luckyCharm', name: '도토리 행운 부적', type: '장신구', icon: '🌰', material: 'wood', baseGold: 85, baseMaterial: 18, stat: 'crit', effect: '치명타 +3%' },
+          { id: 'gemPendant', name: '광산 보석 목걸이', type: '장신구', icon: '💎', material: 'gem', baseGold: 220, baseMaterial: 9, stat: 'gold', effect: '골드 +5%' },
+          { id: 'runeRing', name: '보랏빛 룬 반지', type: '장신구', icon: '💍', material: 'rune', baseGold: 330, baseMaterial: 12, stat: 'boss', effect: '보스 피해 +6%' },
+          { id: 'relicCompass', name: '잃어버린 유물 나침반', type: '장신구', icon: '🧭', material: 'relic', baseGold: 520, baseMaterial: 15, stat: 'materials', effect: '재료 +7%' },
+        ];
+
+        const BUILDING_DEFS = [
+          { id: 'guildhall', name: '길드홀', icon: '🏰', description: '전체 능력과 파티 슬롯의 중심이 되는 작은 본부입니다.', effect: '전체 능력 +4% / 레벨', baseGold: 170, material: 'wood', baseMaterial: 35, kind: 'all' },
+          { id: 'blacksmith', name: '대장간', icon: '⚒️', description: '장비 강화 비용을 낮추고 공격력을 더합니다.', effect: '공격 +3%, 강화 비용 -3%', baseGold: 190, material: 'iron', baseMaterial: 18, kind: 'blacksmith' },
+          { id: 'training', name: '훈련장', icon: '🎯', description: '영웅들이 나무 인형을 두드리며 경험을 얻습니다.', effect: '경험치 +7% / 레벨', baseGold: 150, material: 'wood', baseMaterial: 25, kind: 'exp' },
+          { id: 'market', name: '시장', icon: '🧺', description: '골드와 재료가 길드로 흐르는 귀여운 장터입니다.', effect: '골드·재료 +5% / 레벨', baseGold: 180, material: 'leather', baseMaterial: 28, kind: 'reward' },
+          { id: 'shrine', name: '성소', icon: '⛲', description: '환생할 때 더 많은 명성을 기도합니다.', effect: '환생 명성 +5% / 레벨', baseGold: 240, material: 'rune', baseMaterial: 9, kind: 'fame' },
+        ];
+
+        const COLLECTION_BONUSES = [
+          { id: 'slime100', monster: 'slime', threshold: 100, title: '슬라임 100마리', effect: '영구 골드 +1%', kind: 'gold' },
+          { id: 'goblin100', monster: 'goblin', threshold: 100, title: '고블린 100마리', effect: '영구 재료 +1%', kind: 'materials' },
+          { id: 'stoneGolem50', monster: 'stoneGolem', threshold: 50, title: '돌골렘 50마리', effect: '영구 방어력 +2%', kind: 'defense' },
+        ];
+
+        const MONSTER_DEX = Object.values(ZONES).flatMap((zone) => [
+          ...zone.monsters.map((monster) => ({ ...monster, zoneId: zone.id })),
+          { ...zone.boss, zoneId: zone.id, isBoss: true, baseHp: zone.monsters[0].baseHp * 8 },
+        ]);
+
+        const TAB_DEFS = [
+          { id: 'expedition', label: '원정', icon: 'map' },
+          { id: 'heroes', label: '영웅', icon: 'users' },
+          { id: 'upgrades', label: '업그레이드', icon: 'arrow-up-circle' },
+          { id: 'equipment', label: '장비', icon: 'gem' },
+          { id: 'village', label: '마을', icon: 'home' },
+          { id: 'collection', label: '도감', icon: 'book-open' },
+          { id: 'rebirth', label: '환생', icon: 'rotate-ccw' },
+        ];
+
+        let state = createDefaultState();
+        let audioContext = null;
+        let gameLoop = null;
+        let newGame = false;
+
+        const el = {
+          app: document.getElementById('app'),
+          gold: document.getElementById('goldValue'),
+          fame: document.getElementById('fameValue'),
+          bestStage: document.getElementById('bestStageValue'),
+          saveStatus: document.getElementById('saveStatus'),
+          sound: document.getElementById('soundToggle'),
+          battleLog: document.getElementById('battleLog'),
+          diorama: document.getElementById('diorama'),
+          sceneLabel: document.getElementById('sceneLabel'),
+          dioramaStageLabel: document.getElementById('dioramaStageLabel'),
+          heroStage: document.getElementById('heroStage'),
+          monsterStage: document.getElementById('monsterStage'),
+          effectLayer: document.getElementById('battleEffectLayer'),
+          bossBanner: document.getElementById('bossBanner'),
+          monsterHpFill: document.getElementById('monsterHpFill'),
+          monsterHpText: document.getElementById('monsterHpText'),
+          zoneValue: document.getElementById('zoneValue'),
+          stageValue: document.getElementById('stageValue'),
+          monsterSummaryValue: document.getElementById('monsterSummaryValue'),
+          bossSummaryValue: document.getElementById('bossSummaryValue'),
+          bossGauge: document.getElementById('bossGauge'),
+          bossGaugeFill: document.getElementById('bossGaugeFill'),
+          bossGaugeText: document.getElementById('bossGaugeText'),
+          goldRate: document.getElementById('goldRateValue'),
+          expRate: document.getElementById('expRateValue'),
+          materialRate: document.getElementById('materialRateValue'),
+          tabBar: document.getElementById('tabBar'),
+          tabContent: document.getElementById('tabContent'),
+          welcomeModal: document.getElementById('welcomeModal'),
+          offlineModal: document.getElementById('offlineModal'),
+          bossFailModal: document.getElementById('bossFailModal'),
+          rebirthModal: document.getElementById('rebirthModal'),
+          offlineTime: document.getElementById('offlineTimeValue'),
+          offlineGold: document.getElementById('offlineGoldValue'),
+          offlineExp: document.getElementById('offlineExpValue'),
+          offlineMaterial: document.getElementById('offlineMaterialValue'),
+          bossFailReason: document.getElementById('bossFailReason'),
+          rebirthFame: document.getElementById('rebirthFameValue'),
+          rebirthGold: document.getElementById('rebirthGoldBonus'),
+          rebirthAttack: document.getElementById('rebirthAttackBonus'),
           toast: document.getElementById('toast'),
         };
 
-        function loadBestScore() {
+        function createDefaultState() {
+          const heroes = {};
+          Object.keys(HERO_DEFS).forEach((id) => {
+            heroes[id] = { unlocked: HERO_DEFS[id].unlock === null, level: 1, xp: 0 };
+          });
+          const zoneProgress = {};
+          Object.keys(ZONES).forEach((id, index) => {
+            zoneProgress[id] = { unlocked: index === 0, highestStage: 1, bossDefeated: false };
+          });
+          const upgrades = {};
+          UPGRADE_DEFS.forEach((def) => { upgrades[def.id] = 0; });
+          const equipment = {};
+          EQUIPMENT_DEFS.forEach((def) => { equipment[def.id] = 0; });
+          const buildings = {};
+          BUILDING_DEFS.forEach((def) => { buildings[def.id] = 0; });
+          const kills = {};
+          MONSTER_DEX.forEach((monster) => { kills[monster.id] = 0; });
+
+          return {
+            gold: 160,
+            fame: 0,
+            runes: 0,
+            materials: { wood: 70, leather: 38, iron: 0, gem: 0, rune: 0, relic: 0 },
+            heroes,
+            party: ['roan', 'mira', 'theo'],
+            zoneProgress,
+            currentZoneId: 'forest',
+            currentStage: 1,
+            upgrades,
+            equipment,
+            buildings,
+            collection: { kills, bonusesClaimed: {}, bonuses: { gold: 0, materials: 0, defense: 0 } },
+            lastSavedAt: Date.now(),
+            lastSeenAt: Date.now(),
+            offlineRewardPending: null,
+            settings: { activeTab: 'expedition', battlePolicy: 'balanced', sound: false, hasSeenIntro: false },
+            combat: null,
+            rebirthAvailable: false,
+            rebirthCount: 0,
+          };
+        }
+
+        function hydrateState(saved) {
+          const base = createDefaultState();
+          const merged = { ...base, ...saved };
+          merged.materials = { ...base.materials, ...(saved.materials || {}) };
+          merged.heroes = { ...base.heroes, ...(saved.heroes || {}) };
+          Object.keys(base.heroes).forEach((id) => { merged.heroes[id] = { ...base.heroes[id], ...(merged.heroes[id] || {}) }; });
+          merged.zoneProgress = { ...base.zoneProgress, ...(saved.zoneProgress || {}) };
+          Object.keys(base.zoneProgress).forEach((id) => { merged.zoneProgress[id] = { ...base.zoneProgress[id], ...(merged.zoneProgress[id] || {}) }; });
+          merged.upgrades = { ...base.upgrades, ...(saved.upgrades || {}) };
+          merged.equipment = { ...base.equipment, ...(saved.equipment || {}) };
+          merged.buildings = { ...base.buildings, ...(saved.buildings || {}) };
+          merged.collection = { ...base.collection, ...(saved.collection || {}) };
+          merged.collection.kills = { ...base.collection.kills, ...(merged.collection.kills || {}) };
+          merged.collection.bonusesClaimed = { ...(merged.collection.bonusesClaimed || {}) };
+          merged.collection.bonuses = { ...base.collection.bonuses, ...(merged.collection.bonuses || {}) };
+          merged.settings = { ...base.settings, ...(saved.settings || {}) };
+          merged.party = Array.isArray(saved.party) ? saved.party.filter((id) => HERO_DEFS[id]) : base.party;
+          if (merged.party.length === 0) merged.party = [...base.party];
+          if (!ZONES[merged.currentZoneId] || !merged.zoneProgress[merged.currentZoneId].unlocked) merged.currentZoneId = 'forest';
+          if (!POLICIES[merged.settings.battlePolicy]) merged.settings.battlePolicy = 'balanced';
+          if (!TAB_DEFS.some((tab) => tab.id === merged.settings.activeTab)) merged.settings.activeTab = 'expedition';
+          merged.combat = null;
+          return merged;
+        }
+
+        function loadState() {
+          let raw = null;
           try {
-            const saved = Number.parseInt(window.localStorage.getItem(BEST_SCORE_KEY) || '0', 10);
-            return Number.isFinite(saved) && saved > 0 ? saved : 0;
+            raw = window.localStorage.getItem(SAVE_KEY);
           } catch (error) {
+            raw = null;
+          }
+          if (!raw) {
+            newGame = true;
+            state = createDefaultState();
+            return 0;
+          }
+          try {
+            const saved = JSON.parse(raw);
+            state = hydrateState(saved);
+            syncRunes();
+            const last = Number(saved.lastSeenAt || saved.lastSavedAt || Date.now());
+            const minutesAway = Math.min(OFFLINE_CAP_MINUTES, Math.max(0, (Date.now() - last) / 60000));
+            if (minutesAway >= 0.1 && !state.offlineRewardPending) {
+              state.offlineRewardPending = calculateOfflineReward(minutesAway);
+            }
+            state.lastSeenAt = Date.now();
+            return minutesAway;
+          } catch (error) {
+            newGame = true;
+            state = createDefaultState();
             return 0;
           }
         }
 
-        function saveBestScore() {
+        function syncRunes() {
+          state.runes = Number(state.materials.rune || 0);
+        }
+
+        function saveGame() {
+          syncRunes();
+          state.lastSavedAt = Date.now();
+          state.lastSeenAt = Date.now();
           try {
-            window.localStorage.setItem(BEST_SCORE_KEY, String(state.best));
+            window.localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+            updateSaveStatus();
           } catch (error) {
-            // Private browsing can disable storage; the in-memory score still works.
+            updateSaveStatus('저장 공간 확인');
           }
         }
 
-        function shuffle(items) {
-          const copy = [...items];
-          for (let index = copy.length - 1; index > 0; index -= 1) {
-            const randomIndex = Math.floor(Math.random() * (index + 1));
-            [copy[index], copy[randomIndex]] = [copy[randomIndex], copy[index]];
-          }
-          return copy;
+        function commit() {
+          saveGame();
+          renderHeader();
         }
 
-        function refreshIcons() {
-          if (window.lucide && typeof window.lucide.createIcons === 'function') {
-            window.lucide.createIcons();
-          }
+        function updateSaveStatus(message = '저장됨') {
+          if (!el.saveStatus) return;
+          const text = el.saveStatus.querySelector('span');
+          if (text) text.textContent = message;
+          el.saveStatus.classList.remove('saved-flash');
+          void el.saveStatus.offsetWidth;
+          el.saveStatus.classList.add('saved-flash');
         }
 
-        function updateStats() {
-          elements.streakValue.textContent = String(state.streak);
-          elements.bestValue.textContent = String(state.best);
+        function compactNumber(value) {
+          const number = Math.max(0, Number(value) || 0);
+          if (number < 1000) return Math.floor(number).toString();
+          if (number < 1000000) return `${(number / 1000).toFixed(number < 10000 ? 1 : 0)}K`;
+          if (number < 1000000000) return `${(number / 1000000).toFixed(number < 10000000 ? 1 : 0)}M`;
+          return `${(number / 1000000000).toFixed(1)}B`;
         }
 
-        function updateRoundProgress() {
-          const total = state.deck.length;
-          const current = state.currentIndex + 1;
-          elements.roundLabel.textContent = `ROUND ${String(current).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
-          elements.roundProgressFill.style.width = `${(current / total) * 100}%`;
+        function formatMaterial(materials) {
+          return Object.entries(materials)
+            .filter(([, value]) => value > 0)
+            .map(([key, value]) => `${MATERIAL_ICONS[key]} ${MATERIAL_LABELS[key]} ${compactNumber(value)}`)
+            .join(' · ') || '아직 보관한 재료 없음';
         }
 
-        function renderQuestion() {
-          const question = state.deck[state.currentIndex];
-          if (!question) return;
-
-          state.answered = false;
-          elements.statement.textContent = question.text;
-          elements.questionId.textContent = `CASE #${String(question.id).padStart(3, '0')}`;
-          elements.factButton.disabled = false;
-          elements.capButton.disabled = false;
-          elements.timerFill.style.transform = 'scaleX(1)';
-          elements.timerFill.classList.remove('is-urgent');
-          elements.timerNumber.textContent = '10.0s';
-          elements.timerNumber.style.color = 'var(--primary)';
-          elements.questionCard.classList.remove('shake');
-          updateRoundProgress();
-          refreshIcons();
-          startTimer();
+        function formatMaterialShort(key, value) {
+          return `${MATERIAL_ICONS[key] || '📦'} ${compactNumber(value)}`;
         }
 
-        function startGame() {
-          cancelTimer();
-          state.deck = shuffle(questionBank);
-          state.currentIndex = 0;
-          state.streak = 0;
-          state.lastRunScore = 0;
-          updateStats();
-          hideFeedback();
-          renderQuestion();
+        function getActiveZone() {
+          return ZONES[state.currentZoneId] || ZONES.forest;
         }
 
-        function cancelTimer() {
-          state.timerRunning = false;
-          if (state.timerFrame !== null) {
-            window.cancelAnimationFrame(state.timerFrame);
-            state.timerFrame = null;
-          }
+        function getPolicy() {
+          return POLICIES[state.settings.battlePolicy] || POLICIES.balanced;
         }
 
-        function startTimer() {
-          cancelTimer();
-          state.timerRunning = true;
-          state.timerStartedAt = window.performance.now();
-          let lastWholeSecond = 11;
+        function getUpgradeLevel(id) {
+          return Number(state.upgrades[id] || 0);
+        }
 
-          const tick = (now) => {
-            if (!state.timerRunning || state.answered) return;
-            const elapsed = now - state.timerStartedAt;
-            const remaining = Math.max(0, QUESTION_TIME - elapsed);
-            const progress = Math.max(0, remaining / QUESTION_TIME);
-            const seconds = remaining / 1000;
+        function getBuildingLevel(id) {
+          return Number(state.buildings[id] || 0);
+        }
 
-            elements.timerFill.style.transform = `scaleX(${progress})`;
-            elements.timerNumber.textContent = `${seconds.toFixed(1)}s`;
-            if (seconds <= 3) {
-              elements.timerFill.classList.add('is-urgent');
-              elements.timerNumber.style.color = 'var(--ruby)';
-            } else if (seconds <= 6) {
-              elements.timerNumber.style.color = 'var(--lemon)';
-            }
+        function getEquipmentLevel(id) {
+          return Number(state.equipment[id] || 0);
+        }
 
-            const wholeSecond = Math.ceil(seconds);
-            if (wholeSecond < lastWholeSecond && wholeSecond > 0) {
-              playTick(wholeSecond <= 3 ? 660 : 520);
-              lastWholeSecond = wholeSecond;
-            }
+        function getUpgradeCost(def) {
+          return Math.floor(def.baseCost * Math.pow(def.growth, getUpgradeLevel(def.id)));
+        }
 
-            if (remaining <= 0) {
-              elements.timerNumber.textContent = '0.0s';
-              state.timerFrame = null;
-              handleAnswer(null);
-              return;
-            }
+        function getEquipmentGoldCost(def) {
+          const discount = 1 - Math.min(0.35, getUpgradeLevel('blacksmithExpansion') * 0.04 + getBuildingLevel('blacksmith') * 0.03);
+          return Math.floor(def.baseGold * Math.pow(1.25, getEquipmentLevel(def.id)) * discount);
+        }
 
-            state.timerFrame = window.requestAnimationFrame(tick);
+        function getEquipmentMaterialCost(def) {
+          return Math.floor(def.baseMaterial * Math.pow(1.2, getEquipmentLevel(def.id)));
+        }
+
+        function getBuildingGoldCost(def) {
+          return Math.floor(def.baseGold * Math.pow(1.25, getBuildingLevel(def.id)));
+        }
+
+        function getBuildingMaterialCost(def) {
+          return Math.floor(def.baseMaterial * Math.pow(1.18, getBuildingLevel(def.id)));
+        }
+
+        function getHeroXpToLevel(level) {
+          return Math.floor(80 * Math.pow(level, 1.22));
+        }
+
+        function getHeroGearScore(heroId) {
+          const index = state.party.indexOf(heroId);
+          const total = EQUIPMENT_DEFS.reduce((sum, def) => sum + getEquipmentLevel(def.id), 0);
+          return index >= 0 ? total : Math.floor(total * 0.55);
+        }
+
+        function calculateStats() {
+          const policy = getPolicy();
+          const globalBonus = 1 + getUpgradeLevel('guildBanner') * 0.03 + getBuildingLevel('guildhall') * 0.04 + state.fame * 0.015 + getUpgradeLevel('blacksmithExpansion') * 0.01;
+          const attackUpgrade = getUpgradeLevel('oldSword') * 0.07 + getUpgradeLevel('ironWeapons') * 0.1 + getUpgradeLevel('backlineFocus') * 0.05;
+          const defenseUpgrade = getUpgradeLevel('sturdyShield') * 0.05 + getUpgradeLevel('formation') * 0.05 + getUpgradeLevel('leatherArmor') * 0.08;
+          const hpUpgrade = getUpgradeLevel('camping') * 0.06 + getUpgradeLevel('leatherArmor') * 0.08;
+          const speedUpgrade = getUpgradeLevel('quickBow') * 0.05;
+          const healingBonus = getUpgradeLevel('smallPrayer') * 0.08 + getEquipmentLevel('mushroomCloak') * 0.06;
+          const critBonus = getUpgradeLevel('critTraining') * 0.02 + getEquipmentLevel('luckyCharm') * 0.03;
+          const goldBonus = getUpgradeLevel('lootBag') * 0.05 + getUpgradeLevel('treasureAppraisal') * 0.05 + getUpgradeLevel('guildAccounting') * 0.06 + getEquipmentLevel('gemPendant') * 0.05 + getBuildingLevel('market') * 0.05 + (state.collection.bonuses.gold || 0);
+          const materialBonus = getUpgradeLevel('gatheringTraining') * 0.05 + getUpgradeLevel('autoSorter') * 0.03 + getEquipmentLevel('relicCompass') * 0.07 + getBuildingLevel('market') * 0.05 + (state.collection.bonuses.materials || 0);
+          const bossBonus = getUpgradeLevel('bossResearch') * 0.08 + getEquipmentLevel('runeStaff') * 0.07 + getEquipmentLevel('runeRing') * 0.06;
+          const expBonus = getUpgradeLevel('trainingGroundExpansion') * 0.08 + getUpgradeLevel('adventurerBoard') * 0.04 + getBuildingLevel('training') * 0.07;
+          const party = state.party.filter((id) => state.heroes[id]?.unlocked);
+          let attack = 0;
+          let rawDps = 0;
+          let maxHp = 0;
+          let critChance = 0;
+          let rawHealing = 0;
+          party.forEach((id) => {
+            const def = HERO_DEFS[id];
+            const heroState = state.heroes[id];
+            const levelFactor = 1 + (heroState.level - 1) * 0.16;
+            let heroAttack = def.baseAttack * levelFactor * (1 + attackUpgrade);
+            let heroHp = def.baseHp * levelFactor * (1 + hpUpgrade);
+            let heroSpeed = def.attackSpeed * (1 + speedUpgrade);
+            if (id === 'roan') heroHp *= 1.18;
+            if (id === 'mira') heroSpeed *= 1.15;
+            if (id === 'theo') heroAttack *= 1.08;
+            if (id === 'ordyn') heroAttack *= 1.18;
+            if (id === 'nia') critChance += def.crit * 0.35;
+            attack += heroAttack;
+            maxHp += heroHp;
+            critChance += def.crit;
+            rawDps += heroAttack * heroSpeed;
+            if (id === 'sera') rawHealing += 18 * levelFactor;
+          });
+          const equipmentAttack = getEquipmentLevel('woodenSword') * 0.04 + getEquipmentLevel('ironBlade') * 0.07;
+          const equipmentAll = getEquipmentLevel('relicArmor') * 0.04;
+          const attackMultiplier = globalBonus * (1 + equipmentAttack + equipmentAll);
+          const finalAttack = attack * attackMultiplier;
+          const finalRawDps = rawDps * attackMultiplier * policy.speed;
+          const finalCrit = Math.min(0.75, critChance + critBonus);
+          const defense = Math.min(0.72, Math.max(0, defenseUpgrade + getEquipmentLevel('ironMail') * 0.05 + (state.collection.bonuses.defense || 0) + policy.defense));
+          const rewardMultiplier = Math.max(0.25, (1 + goldBonus + getUpgradeLevel('adventurerBoard') * 0.04 + getUpgradeLevel('autoSorter') * 0.03) * policy.reward);
+          const materialMultiplier = Math.max(0.25, (1 + materialBonus + getUpgradeLevel('adventurerBoard') * 0.04) * policy.reward);
+          const bossMultiplier = Math.max(0.25, (1 + bossBonus + (state.party.includes('theo') ? 0.12 : 0)) * policy.boss);
+          const expMultiplier = 1 + expBonus;
+          return {
+            party,
+            attack: finalAttack,
+            dps: finalRawDps * (1 + finalCrit * 0.75),
+            rawDps: finalRawDps,
+            maxHp: Math.max(1, maxHp * globalBonus),
+            defense,
+            critChance: finalCrit,
+            healing: rawHealing * (1 + healingBonus) * policy.healing,
+            rewardMultiplier,
+            materialMultiplier,
+            bossMultiplier,
+            expMultiplier,
+            goldBonus,
+            materialBonus,
+            policy,
           };
-
-          state.timerFrame = window.requestAnimationFrame(tick);
         }
 
-        function handleAnswer(answer) {
-          if (state.answered || !state.timerRunning) return;
-
-          const elapsed = window.performance.now() - state.timerStartedAt;
-          const submittedAnswer = elapsed >= QUESTION_TIME ? null : answer;
-          state.answered = true;
-          cancelTimer();
-          elements.factButton.disabled = true;
-          elements.capButton.disabled = true;
-
-          const question = state.deck[state.currentIndex];
-          const isCorrect = submittedAnswer !== null && submittedAnswer === question.isFact;
-
-          if (isCorrect) {
-            state.streak += 1;
-            state.lastRunScore = state.streak;
-            if (state.streak > state.best) {
-              state.best = state.streak;
-              saveBestScore();
-            }
-            updateStats();
-            playSuccess();
-            flashCorrect();
-            if (state.streak >= 3) celebrate();
-            showFeedback({ isCorrect: true, question, timedOut: false, final: state.currentIndex === state.deck.length - 1 });
-          } else {
-            state.lastRunScore = state.streak;
-            updateStats();
-            playFailure();
-            shakeQuestion();
-            showFeedback({ isCorrect: false, question, timedOut: submittedAnswer === null, final: true });
-            state.streak = 0;
-            updateStats();
-          }
+        function getEncounter() {
+          const zone = getActiveZone();
+          const stage = Math.max(1, Number(state.currentStage || 1));
+          const isBoss = stage % 10 === 0;
+          const ordinary = zone.monsters[(stage - 1) % zone.monsters.length];
+          const source = isBoss ? zone.boss : ordinary;
+          const stageHpMultiplier = Math.pow(1.16, stage - 1) * zone.hpMultiplier;
+          const hp = Math.max(1, Math.floor(ordinary.baseHp * stageHpMultiplier * (isBoss ? 8 : 1)));
+          const gold = Math.max(1, Math.floor(ordinary.baseGold * Math.pow(1.12, stage - 1) * zone.rewardMultiplier * (isBoss ? 8 : 1)));
+          return { ...source, zoneId: zone.id, stage, isBoss, hp, gold, materialCount: isBoss ? 8 : 1 + Math.floor(stage / 8) };
         }
 
-        function showFeedback({ isCorrect, question, timedOut, final }) {
-          state.feedbackIsCorrect = isCorrect;
-          state.feedbackIsFinal = final;
-          elements.feedbackPanel.classList.toggle('is-correct', isCorrect);
-          elements.feedbackPanel.classList.toggle('is-wrong', !isCorrect);
-
-          if (isCorrect) {
-            elements.feedbackIcon.innerHTML = '<i data-lucide="sparkles" aria-hidden="true"></i>';
-            elements.feedbackKicker.textContent = state.streak >= 3 ? 'Combo mode activated' : 'You read the matrix';
-            elements.feedbackTitle.textContent = final ? 'FULL FACT CHECK' : 'NICE CALL!';
-            elements.feedbackScore.textContent = final ? `${state.streak} / ${state.deck.length} clear` : `+1 streak · ${state.streak}`;
-            elements.correctAnswer.textContent = 'FACT CHECKED · 진짜';
-            elements.feedbackExplanation.textContent = question.explanation;
-            elements.continueButton.innerHTML = final
-              ? '<i data-lucide="rotate-ccw" aria-hidden="true"></i><span>새 라운드 시작</span>'
-              : '<i data-lucide="arrow-right" aria-hidden="true"></i><span>다음 문제</span>';
-            elements.shareButton.hidden = true;
-          } else {
-            elements.feedbackIcon.innerHTML = '<i data-lucide="x-octagon" aria-hidden="true"></i>';
-            elements.feedbackKicker.textContent = timedOut ? 'The clock chose violence' : 'The AI got you';
-            elements.feedbackTitle.textContent = 'BUSTED!';
-            elements.feedbackScore.textContent = `final streak · ${state.lastRunScore}`;
-            elements.correctAnswer.textContent = question.isFact ? 'FACT · 진짜' : 'CAP · AI 헛소리';
-            elements.feedbackExplanation.textContent = question.explanation;
-            elements.continueButton.innerHTML = '<i data-lucide="rotate-ccw" aria-hidden="true"></i><span>다시 도전하기</span>';
-            elements.shareButton.hidden = false;
+        function ensureEncounter() {
+          const encounter = getEncounter();
+          const key = `${encounter.zoneId}-${encounter.stage}`;
+          if (!state.combat || state.combat.key !== key) {
+            const stats = calculateStats();
+            state.combat = {
+              key,
+              monsterHp: encounter.hp,
+              monsterMaxHp: encounter.hp,
+              partyHp: stats.maxHp,
+              partyMaxHp: stats.maxHp,
+              tick: 0,
+              bossAnnounced: false,
+              lastLog: `${encounter.name}을(를) 만났습니다.`,
+            };
           }
+          return encounter;
+        }
 
-          if (question.source) {
-            elements.sourceLink.textContent = `읽어보기: ${question.source.label}`;
-            elements.sourceLink.href = question.source.url;
-            elements.sourceNote.hidden = false;
-          } else {
-            elements.sourceNote.hidden = true;
-            elements.sourceLink.removeAttribute('href');
-          }
+        function calculateIncomePerMinute() {
+          const encounter = getEncounter();
+          const stats = calculateStats();
+          const killsPerMinute = Math.max(1, Math.min(60, (stats.dps / Math.max(1, encounter.hp)) * 60));
+          const gold = encounter.gold * stats.rewardMultiplier * killsPerMinute;
+          const exp = 8 * Math.pow(1.1, encounter.stage - 1) * stats.expMultiplier * killsPerMinute;
+          const material = encounter.materialCount * stats.materialMultiplier * killsPerMinute;
+          return { gold, exp, material };
+        }
 
-          elements.feedbackOverlay.classList.remove('is-hidden');
+        function calculateOfflineReward(minutes) {
+          const rate = calculateIncomePerMinute();
+          const safeMinutes = Math.min(OFFLINE_CAP_MINUTES, Math.max(0, minutes));
+          return {
+            minutes: safeMinutes,
+            gold: Math.floor(rate.gold * safeMinutes * OFFLINE_EFFICIENCY),
+            exp: Math.floor(rate.exp * safeMinutes * OFFLINE_EFFICIENCY),
+            materials: Math.max(1, Math.floor(rate.material * safeMinutes * OFFLINE_EFFICIENCY)),
+            materialMap: makeMaterialReward(Math.max(1, Math.floor(rate.material * safeMinutes * OFFLINE_EFFICIENCY))),
+          };
+        }
+
+        function makeMaterialReward(total) {
+          const zone = getActiveZone();
+          const reward = {};
+          zone.rewardKeys.forEach((key, index) => { reward[key] = Math.max(0, Math.floor(total * (index === 0 ? 0.62 : 0.38))); });
+          return reward;
+        }
+
+        function renderHeader() {
+          el.gold.textContent = compactNumber(state.gold);
+          el.fame.textContent = compactNumber(state.fame);
+          el.bestStage.textContent = getBestStageLabel();
+          el.sound.classList.toggle('is-on', Boolean(state.settings.sound));
+          el.sound.setAttribute('aria-pressed', String(Boolean(state.settings.sound)));
+          el.sound.setAttribute('aria-label', state.settings.sound ? '사운드 끄기' : '사운드 켜기');
+          el.sound.innerHTML = `<i data-lucide="${state.settings.sound ? 'volume-2' : 'volume-x'}" aria-hidden="true"></i>`;
           refreshIcons();
-          window.setTimeout(() => elements.continueButton.focus(), 30);
         }
 
-        function hideFeedback() {
-          elements.feedbackOverlay.classList.add('is-hidden');
-          elements.shareButton.hidden = true;
-          elements.sourceNote.hidden = true;
+        function getBestStageLabel() {
+          let bestZone = ZONES.forest;
+          let best = 1;
+          Object.keys(ZONES).forEach((id) => {
+            const value = Number(state.zoneProgress[id]?.highestStage || 1);
+            if (value > best) { best = value; bestZone = ZONES[id]; }
+          });
+          return `${bestZone.icon} ${best}`;
         }
 
-        function continueFromFeedback() {
-          hideFeedback();
-          if (!state.feedbackIsCorrect || state.feedbackIsFinal) {
-            startGame();
+        function renderBattle() {
+          const encounter = ensureEncounter();
+          const combat = state.combat;
+          const stats = calculateStats();
+          const zone = getActiveZone();
+          const hpPercent = Math.max(0, Math.min(100, (combat.monsterHp / combat.monsterMaxHp) * 100));
+          const partyPercent = Math.max(0, Math.min(100, (combat.partyHp / combat.partyMaxHp) * 100));
+          el.sceneLabel.innerHTML = `<i data-lucide="trees" aria-hidden="true"></i><span>${zone.name}</span>`;
+          el.dioramaStageLabel.textContent = encounter.isBoss ? `BOSS · STAGE ${encounter.stage}` : `STAGE ${encounter.stage}`;
+          el.heroStage.innerHTML = stats.party.length > 0 ? stats.party.map((id) => {
+            const hero = HERO_DEFS[id];
+            const heroState = state.heroes[id];
+            const gear = getHeroGearScore(id);
+            return `<div class="hero-token" title="${hero.name} Lv.${heroState.level}" data-hero-token="${id}"><span class="token-emoji">${hero.emoji}</span><span class="token-name">${hero.name.replace(' ', '')}</span><span class="token-level">${heroState.level}</span>${gear > 0 ? `<span class="gear-spark">✦</span>` : ''}</div>`;
+          }).join('') : '<div class="hero-token"><span class="token-emoji">🪑</span><span class="token-name">빈 슬롯</span></div>';
+          el.monsterStage.innerHTML = `<div id="monsterToken" class="monster-token${encounter.isBoss ? ' boss-token' : ''}" title="${encounter.name}"><span class="token-emoji">${encounter.emoji}</span><span class="token-name">${encounter.name}</span></div>`;
+          el.monsterHpFill.style.width = `${hpPercent}%`;
+          el.monsterHpText.textContent = `${compactNumber(combat.monsterHp)} / ${compactNumber(combat.monsterMaxHp)}`;
+          el.zoneValue.textContent = zone.name;
+          el.stageValue.textContent = encounter.isBoss ? `보스 ${encounter.stage}` : String(encounter.stage);
+          el.monsterSummaryValue.textContent = compactNumber(combat.monsterHp);
+          const nextBoss = encounter.isBoss ? '전투 중' : `${10 - (encounter.stage % 10)} 스테이지 후`;
+          el.bossSummaryValue.textContent = nextBoss;
+          el.battleLog.textContent = combat.lastLog || `${encounter.name}을(를) 관전 중입니다.`;
+          el.diorama.classList.toggle('boss-mode', encounter.isBoss);
+          if (encounter.isBoss && !combat.bossAnnounced) {
+            combat.bossAnnounced = true;
+            el.bossBanner.classList.remove('is-hidden');
+            window.setTimeout(() => el.bossBanner.classList.add('is-hidden'), 3000);
+          } else if (!encounter.isBoss) {
+            el.bossBanner.classList.add('is-hidden');
+          }
+          if (encounter.isBoss) {
+            el.bossGauge.classList.add('is-visible');
+            el.bossGaugeFill.style.width = `${hpPercent}%`;
+            el.bossGaugeText.textContent = `${Math.ceil(hpPercent)}%`;
+          } else {
+            el.bossGauge.classList.remove('is-visible');
+          }
+          const rate = calculateIncomePerMinute();
+          el.goldRate.textContent = compactNumber(rate.gold);
+          el.expRate.textContent = compactNumber(rate.exp);
+          el.materialRate.textContent = compactNumber(rate.material);
+          if (partyPercent < 0.32) {
+            el.battleLog.textContent = `${encounter.name}의 공격이 거셉니다. 야영 기술이나 안정 전투를 살펴보세요.`;
+          }
+          refreshIcons();
+        }
+
+        function renderTabs() {
+          const upgradeReady = canBuyAnyUpgrade();
+          el.tabBar.innerHTML = TAB_DEFS.map((tab) => `<button class="tab-button${state.settings.activeTab === tab.id ? ' active' : ''}" type="button" data-tab="${tab.id}" aria-selected="${state.settings.activeTab === tab.id}"><i data-lucide="${tab.icon}" aria-hidden="true"></i><span>${tab.label}</span>${tab.id === 'upgrades' && upgradeReady ? '<span class="tab-alert" aria-label="구매 가능한 업그레이드"></span>' : ''}</button>`).join('');
+          el.tabBar.querySelectorAll('[data-tab]').forEach((button) => button.addEventListener('click', () => {
+            state.settings.activeTab = button.dataset.tab;
+            commit();
+            renderTabs();
+            renderActivePanel();
+          }));
+          refreshIcons();
+        }
+
+        function renderActivePanel() {
+          const renderers = {
+            expedition: renderExpedition,
+            heroes: renderHeroes,
+            upgrades: renderUpgrades,
+            equipment: renderEquipment,
+            village: renderVillage,
+            collection: renderCollection,
+            rebirth: renderRebirth,
+          };
+          const renderer = renderers[state.settings.activeTab] || renderExpedition;
+          el.tabContent.innerHTML = renderer();
+          bindPanelActions();
+          refreshIcons();
+        }
+
+        function renderExpedition() {
+          const zoneCards = Object.values(ZONES).map((zone) => {
+            const progress = state.zoneProgress[zone.id];
+            const selected = state.currentZoneId === zone.id;
+            const locked = !progress.unlocked;
+            const lockMessage = zone.id === 'mine' ? '초록 숲 10스테이지 보스 처치 시 해금' : '오래된 광산 10스테이지 보스 처치 시 해금';
+            return `<button class="zone-card${selected ? ' selected' : ''}${locked ? ' locked' : ''}" type="button" data-action="select-zone" data-id="${zone.id}" ${locked ? 'disabled' : ''}><span class="zone-icon">${zone.icon}</span><span class="zone-badge">${locked ? '🔒 잠김' : selected ? '현재 원정지' : `최고 ${progress.highestStage}`}</span><h3>${zone.name}</h3><p>${locked ? lockMessage : `${zone.description}<br />주 보상 · ${zone.rewardText}`}</p></button>`;
+          }).join('');
+          const policies = Object.values(POLICIES).map((policy) => `<button class="policy-card${state.settings.battlePolicy === policy.id ? ' selected' : ''}" type="button" data-action="select-policy" data-id="${policy.id}"><span class="policy-icon">${policy.icon}</span><h3>${policy.name}</h3><span class="policy-effect">${policy.id === state.settings.battlePolicy ? '현재 선택 · ' : ''}${policy.summary}</span></button>`).join('');
+          return `<div class="content-heading"><div><h2>어디로 떠날까요?</h2><p>원정지를 고르고, 전투 방침만 정하면 나머지는 대원들이 알아서 합니다.</p></div><span class="tiny-pill">3인 파티</span></div><div class="grid-3">${zoneCards}</div><div class="content-heading" style="margin-top:18px"><div><h2>전투 방침</h2><p>선택하면 디오라마의 속도와 보상 계산에 바로 반영됩니다.</p></div><span class="tiny-pill rune">${POLICIES[state.settings.battlePolicy].icon} ${POLICIES[state.settings.battlePolicy].name}</span></div><div class="grid-2">${policies}</div>${renderRecommendation()}`;
+        }
+
+        function renderRecommendation() {
+          const encounter = getEncounter();
+          const stats = calculateStats();
+          let text = '첫 원정은 균형 전투로 흐름을 살펴보고, 골드가 모이면 낡은 검 연마를 먼저 올려보세요.';
+          if (encounter.isBoss && stats.dps < encounter.hp / 9) text = '보스에게 자주 지면 공격력이 부족합니다. 낡은 검 연마나 보스 연구를 강화해 보세요.';
+          else if (state.combat && state.combat.partyHp / state.combat.partyMaxHp < 0.4) text = '생존력이 부족합니다. 튼튼한 방패나 작은 회복 기도를 강화해 보세요.';
+          else if (state.materials.iron < 10 && state.currentZoneId === 'forest') text = '광산 원정을 돌면 장비 강화 재료를 더 빨리 모을 수 있습니다.';
+          else if (canBuyAnyUpgrade()) text = '첫 업그레이드가 가능합니다. 업그레이드 탭에서 작은 성장을 쌓아보세요.';
+          else if (state.currentStage >= 8) text = '곧 보스가 등장합니다. 보스 집중 방침과 회복 가능한 파티를 준비해 보세요.';
+          return `<div class="guide-card"><i data-lucide="compass" aria-hidden="true"></i><div><strong>길드장의 다음 선택</strong><p>${text}</p></div></div>`;
+        }
+
+        function renderHeroes() {
+          const cards = Object.values(HERO_DEFS).map((hero) => {
+            const heroState = state.heroes[hero.id];
+            const inParty = state.party.includes(hero.id);
+            const locked = !heroState.unlocked;
+            const xpNeed = getHeroXpToLevel(heroState.level);
+            const levelButton = locked ? `<button class="mini-button rune" type="button" data-action="unlock-hero" data-id="${hero.id}">해금</button>` : `<button class="mini-button outline" type="button" data-action="train-hero" data-id="${hero.id}" ${state.gold < getHeroTrainingCost(hero.id) ? 'disabled' : ''}>훈련 ${compactNumber(getHeroTrainingCost(hero.id))}G</button>`;
+            const partyButton = locked ? '' : `<button class="mini-button ${inParty ? 'primary' : 'outline'}" type="button" data-action="toggle-party" data-id="${hero.id}">${inParty ? '파티에서 빼기' : '파티에 넣기'}</button>`;
+            return `<article class="hero-card${inParty ? ' in-party' : ''}${locked ? ' locked' : ''}"><div class="hero-card-top"><div class="hero-emblem">${hero.emoji}${inParty ? '<span class="gear-spark">✦</span>' : ''}</div><div class="hero-text"><h3>${hero.name}</h3><span class="hero-role">${hero.role}${inParty ? ' · 파티 중' : ''}</span></div></div><p class="hero-description">${locked ? `해금 비용 · ${formatHeroUnlock(hero.unlock)}` : hero.description}</p><div class="hero-stats"><div class="hero-stat">HP<strong>${compactNumber(hero.baseHp * (1 + (heroState.level - 1) * 0.16))}</strong></div><div class="hero-stat">공격<strong>${compactNumber(hero.baseAttack * (1 + (heroState.level - 1) * 0.16))}</strong></div><div class="hero-stat">Lv / XP<strong>${heroState.level} · ${locked ? '—' : `${compactNumber(heroState.xp)}/${compactNumber(xpNeed)}`}</strong></div></div><div class="hero-actions">${levelButton}${partyButton}</div></article>`;
+          }).join('');
+          return `<div class="content-heading"><div><h2>우리 영웅들</h2><p>해금된 영웅 중 최대 3명을 파티에 넣습니다. 대원들은 각자의 방식으로 자동 전투합니다.</p></div><span class="tiny-pill">${state.party.length} / 3 슬롯</span></div><div class="grid-2">${cards}</div>`;
+        }
+
+        function formatHeroUnlock(unlock) {
+          if (!unlock) return '기본 지급';
+          return Object.entries(unlock).map(([key, value]) => key === 'gold' ? `🪙 ${compactNumber(value)}` : `${MATERIAL_ICONS[key]} ${value}`).join(' · ');
+        }
+
+        function getHeroTrainingCost(id) {
+          return Math.floor(100 * Math.pow(1.34, state.heroes[id].level - 1));
+        }
+
+        function renderUpgrades() {
+          const cards = UPGRADE_DEFS.map((def) => {
+            const level = getUpgradeLevel(def.id);
+            const maxed = level >= def.max;
+            const cost = getUpgradeCost(def);
+            return `<article class="upgrade-card"><div class="upgrade-top"><div><span class="tiny-pill">성장률 ${def.growth.toFixed(2)}</span><h3>${def.name}</h3></div><span class="level-badge">Lv.${level} / ${def.max}</span></div><p>${def.description}</p><span class="effect-line">${def.effect}</span><div class="card-action-row"><span class="cost-line"><span class="cost-gold">🪙 ${maxed ? 'MAX' : compactNumber(cost)}</span></span><button class="mini-button ${maxed ? 'outline' : 'primary'}" type="button" data-action="buy-upgrade" data-id="${def.id}" ${maxed || state.gold < cost ? 'disabled' : ''}>${maxed ? '최대' : '구매'}</button></div></article>`;
+          }).join('');
+          return `<div class="content-heading"><div><h2>길드 업그레이드</h2><p>기본 비용 × 성장률의 현재 레벨 지수로 비용이 오릅니다. 성장 방향을 골라보세요.</p></div><span class="tiny-pill gold">🪙 ${compactNumber(state.gold)}</span></div><div class="grid-2">${cards}</div>`;
+        }
+
+        function renderEquipment() {
+          const groups = ['무기', '방어구', '장신구'].map((type) => {
+            const cards = EQUIPMENT_DEFS.filter((def) => def.type === type).map((def) => {
+              const level = getEquipmentLevel(def.id);
+              const goldCost = getEquipmentGoldCost(def);
+              const materialCost = getEquipmentMaterialCost(def);
+              const maxed = level >= 10;
+              const canBuy = state.gold >= goldCost && (state.materials[def.material] || 0) >= materialCost;
+              return `<article class="equipment-card"><div class="equipment-top"><div class="equipment-icon">${def.icon}</div><span class="level-badge">Lv.${level} / 10</span></div><span class="equipment-type">${def.type}</span><h3>${def.name}</h3><p>${def.effect} · 강화할수록 영웅 아이콘에 별빛이 생깁니다.</p><div class="card-action-row"><span class="cost-line"><span class="cost-gold">🪙 ${maxed ? 'MAX' : compactNumber(goldCost)}</span><span class="cost-material">${maxed ? '' : `${MATERIAL_ICONS[def.material]} ${materialCost}`}</span></span><button class="mini-button ${maxed ? 'outline' : 'rune'}" type="button" data-action="upgrade-equipment" data-id="${def.id}" ${maxed || !canBuy ? 'disabled' : ''}>${maxed ? '최대' : '강화'}</button></div></article>`;
+            }).join('');
+            return `<div class="content-heading" style="margin-top:16px"><div><h2>${type}</h2><p>장비 레벨은 전투 계산과 영웅 카드 외형에 반영됩니다.</p></div></div><div class="grid-2">${cards}</div>`;
+          }).join('');
+          return `<div class="content-heading"><div><h2>장비 대장간</h2><p>골드와 해당 재료로 장비를 강화하세요. 강화 비용은 대장간의 영향을 받습니다.</p></div><span class="tiny-pill rune">강화 12종</span></div>${groups}`;
+        }
+
+        function renderVillage() {
+          const buildings = BUILDING_DEFS.map((def) => {
+            const level = getBuildingLevel(def.id);
+            const maxed = level >= 10;
+            const goldCost = getBuildingGoldCost(def);
+            const materialCost = getBuildingMaterialCost(def);
+            const canBuy = state.gold >= goldCost && (state.materials[def.material] || 0) >= materialCost;
+            const stage = level >= 10 ? '성채 단계 · Lv.10' : level >= 5 ? '확장 단계 · Lv.5+' : level >= 1 ? '문을 연 단계 · Lv.1+' : '아직 공터';
+            return `<article class="building-card"><div class="building-top"><div class="building-icon">${getBuildingIcon(def, level)}</div><span class="level-badge">Lv.${level} / 10</span></div><span class="building-stage">${stage}</span><h3>${def.name}</h3><p>${def.description}<br /><strong>${def.effect}</strong></p><div class="card-action-row"><span class="cost-line"><span class="cost-gold">🪙 ${maxed ? 'MAX' : compactNumber(goldCost)}</span><span class="cost-material">${maxed ? '' : `${MATERIAL_ICONS[def.material]} ${materialCost}`}</span></span><button class="mini-button ${maxed ? 'outline' : 'gold'}" type="button" data-action="upgrade-building" data-id="${def.id}" ${maxed || !canBuy ? 'disabled' : ''}>${maxed ? '최대' : '건설'}</button></div></article>`;
+          }).join('');
+          const town = BUILDING_DEFS.map((def) => `<div class="village-house level-${getBuildingLevel(def.id) >= 10 ? '10' : getBuildingLevel(def.id) >= 5 ? '5' : getBuildingLevel(def.id) >= 1 ? '1' : '0'}" title="${def.name} Lv.${getBuildingLevel(def.id)}"><span>${getBuildingIcon(def, getBuildingLevel(def.id))}</span></div>`).join('');
+          return `<div class="content-heading"><div><h2>작은 마을</h2><p>건물이 1, 5, 10레벨에 도달하면 외형 단계가 바뀝니다.</p></div><span class="tiny-pill gold">마을 성장</span></div><div class="village-scene" aria-label="건물 미니 마을 풍경">${town}</div><div class="grid-2">${buildings}</div>`;
+        }
+
+        function getBuildingIcon(def, level) {
+          if (level >= 10) return def.id === 'shrine' ? '🌟' : '🏯';
+          if (level >= 5) return def.id === 'blacksmith' ? '🔥' : '🏠';
+          if (level >= 1) return def.icon;
+          return '🪨';
+        }
+
+        function renderCollection() {
+          const cards = MONSTER_DEX.map((monster) => {
+            const kills = Number(state.collection.kills[monster.id] || 0);
+            const target = monster.isBoss ? 10 : 100;
+            return `<article class="collection-card"><div class="collection-monster"><span class="collection-emoji">${monster.emoji}</span><div><h3>${monster.name}</h3><p>${ZONES[monster.zoneId].name}${monster.isBoss ? ' · 보스' : ''}</p></div></div><div class="kill-count">${compactNumber(kills)} / ${target} 처치</div><div class="collection-track"><span style="width:${Math.min(100, (kills / target) * 100)}%"></span></div></article>`;
+          }).join('');
+          const bonuses = COLLECTION_BONUSES.map((bonus) => {
+            const claimed = Boolean(state.collection.bonusesClaimed[bonus.id]);
+            const progress = Math.min(bonus.threshold, Number(state.collection.kills[bonus.monster] || 0));
+            return `<div class="bonus-row${claimed ? ' claimed' : ''}"><div><strong>${bonus.title}</strong><span>${bonus.effect} · ${progress} / ${bonus.threshold}</span></div><span class="bonus-state">${claimed ? '무료 획득 ✓' : '수집 중'}</span></div>`;
+          }).join('');
+          return `<div class="content-heading"><div><h2>몬스터 도감</h2><p>처치 기록을 모으면 무료 영구 보너스를 얻습니다. 결제나 확률은 없습니다.</p></div><span class="tiny-pill rune">기록 ${Object.values(state.collection.kills).reduce((sum, value) => sum + value, 0)}</span></div><div class="grid-3">${cards}</div><div class="content-heading" style="margin-top:18px"><div><h2>도감 보너스</h2><p>작은 기록이 길드 전체의 영구 효과가 됩니다.</p></div></div><div class="bonus-list">${bonuses}</div>`;
+        }
+
+        function renderRebirth() {
+          const unlocked = state.rebirthAvailable;
+          const fame = getExpectedFame();
+          return `<div class="reincarnation-card${unlocked ? ' unlocked' : ''}"><div class="reincarnation-icon">${unlocked ? '✨' : '🔒'}</div><h3>${unlocked ? '환생의 문이 열렸습니다' : '환생은 아직 잠겨 있어요'}</h3><p>${unlocked ? '고대 유적 10스테이지의 잠든 석상을 처치했습니다. 지금까지의 성장을 명성으로 바꿀 수 있습니다.' : '고대 유적 10스테이지 보스를 처치하면 환생 버튼이 열립니다. 한 단계의 환생 시스템으로 영구 보너스를 얻습니다.'}</p><div class="reincarnation-effects"><div class="reincarnation-effect"><strong>+${compactNumber(fame)}</strong> 예상 명성</div><div class="reincarnation-effect"><strong>+${state.fame * 1.5}%</strong> 현재 골드 보너스</div><div class="reincarnation-effect"><strong>+${state.fame * 1.5}%</strong> 현재 공격 보너스</div><div class="reincarnation-effect"><strong>1단계</strong> 환생 시스템</div></div><div class="reset-list"><span><strong>초기화:</strong> 골드, 영웅 경험치/레벨, 지역 진행</span><span><strong>유지:</strong> 영웅 해금, 업그레이드, 마을, 도감, 명성</span><span><strong>장비:</strong> 현재 장비 레벨의 절반 유지</span></div><div class="card-action-row"><button class="button ${unlocked ? 'gold' : 'outline'}" type="button" data-action="open-rebirth" ${unlocked ? '' : 'disabled'}><i data-lucide="rotate-ccw" aria-hidden="true"></i>${unlocked ? `환생 전 확인 · 명성 +${compactNumber(fame)}` : '고대 유적 보스 처치 필요'}</button></div></div>`;
+        }
+
+        function bindPanelActions() {
+          el.tabContent.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => handleAction(button.dataset.action, button.dataset.id)));
+        }
+
+        function handleAction(action, id) {
+          switch (action) {
+            case 'select-zone': selectZone(id); break;
+            case 'select-policy': selectPolicy(id); break;
+            case 'toggle-party': toggleParty(id); break;
+            case 'unlock-hero': unlockHero(id); break;
+            case 'train-hero': trainHero(id); break;
+            case 'buy-upgrade': buyUpgrade(id); break;
+            case 'upgrade-equipment': upgradeEquipment(id); break;
+            case 'upgrade-building': upgradeBuilding(id); break;
+            case 'open-rebirth': openRebirthModal(); break;
+            default: break;
+          }
+        }
+
+        function refreshPanels() {
+          renderHeader();
+          renderTabs();
+          renderActivePanel();
+        }
+
+        function selectZone(id) {
+          if (!ZONES[id] || !state.zoneProgress[id]?.unlocked) return;
+          state.currentZoneId = id;
+          state.currentStage = Math.max(1, state.zoneProgress[id].highestStage || 1);
+          state.combat = null;
+          commit();
+          renderBattle();
+          refreshPanels();
+          showToast(`${ZONES[id].name} 원정을 시작합니다.`);
+        }
+
+        function selectPolicy(id) {
+          if (!POLICIES[id]) return;
+          state.settings.battlePolicy = id;
+          commit();
+          renderBattle();
+          refreshPanels();
+          showToast(`${POLICIES[id].name} 방침을 적용했습니다.`);
+        }
+
+        function toggleParty(id) {
+          if (!state.heroes[id]?.unlocked) return;
+          if (state.party.includes(id)) {
+            if (state.party.length <= 1) { showToast('최소 한 명의 영웅은 파티에 남아 있어야 합니다.'); return; }
+            state.party = state.party.filter((member) => member !== id);
+          } else {
+            if (state.party.length >= 3) { showToast('파티 슬롯은 3개입니다. 먼저 한 명을 빼주세요.'); return; }
+            state.party.push(id);
+          }
+          state.combat = null;
+          commit();
+          renderBattle();
+          refreshPanels();
+        }
+
+        function canAffordUnlock(cost) {
+          return state.gold >= (cost.gold || 0) && Object.entries(cost).filter(([key]) => key !== 'gold').every(([key, value]) => (state.materials[key] || 0) >= value);
+        }
+
+        function unlockHero(id) {
+          const hero = HERO_DEFS[id];
+          const data = state.heroes[id];
+          if (!hero || data.unlocked || !hero.unlock) return;
+          if (!canAffordUnlock(hero.unlock)) { showToast('해금 재료가 아직 조금 부족합니다.'); return; }
+          Object.entries(hero.unlock).forEach(([key, value]) => { if (key === 'gold') state.gold -= value; else state.materials[key] -= value; });
+          data.unlocked = true;
+          commit();
+          refreshPanels();
+          showToast(`${hero.name}이(가) 길드에 합류했습니다.`);
+        }
+
+        function trainHero(id) {
+          const heroState = state.heroes[id];
+          const cost = getHeroTrainingCost(id);
+          if (!heroState?.unlocked || state.gold < cost) { showToast('훈련 비용이 부족합니다.'); return; }
+          state.gold -= cost;
+          heroState.level += 1;
+          heroState.xp = 0;
+          state.combat = null;
+          commit();
+          renderBattle();
+          refreshPanels();
+          const token = document.querySelector(`[data-hero-token="${id}"]`);
+          if (token) { token.classList.add('level-up'); window.setTimeout(() => token.classList.remove('level-up'), 1000); }
+          showToast(`${HERO_DEFS[id].name}이(가) 레벨 ${heroState.level}이 되었습니다!`);
+        }
+
+        function buyUpgrade(id) {
+          const def = UPGRADE_DEFS.find((item) => item.id === id);
+          if (!def) return;
+          const level = getUpgradeLevel(id);
+          const cost = getUpgradeCost(def);
+          if (level >= def.max) return;
+          if (state.gold < cost) { showToast('골드가 부족합니다. 원정대가 조금 더 다녀오게 해보세요.'); return; }
+          state.gold -= cost;
+          state.upgrades[id] = level + 1;
+          state.combat = null;
+          commit();
+          renderBattle();
+          refreshPanels();
+          showToast(`${def.name} Lv.${level + 1} 강화 완료`);
+        }
+
+        function upgradeEquipment(id) {
+          const def = EQUIPMENT_DEFS.find((item) => item.id === id);
+          if (!def) return;
+          const level = getEquipmentLevel(id);
+          if (level >= 10) return;
+          const goldCost = getEquipmentGoldCost(def);
+          const materialCost = getEquipmentMaterialCost(def);
+          if (state.gold < goldCost || (state.materials[def.material] || 0) < materialCost) { showToast('장비 강화에 필요한 골드와 재료를 확인해 보세요.'); return; }
+          state.gold -= goldCost;
+          state.materials[def.material] -= materialCost;
+          state.equipment[id] = level + 1;
+          state.combat = null;
+          commit();
+          renderBattle();
+          refreshPanels();
+          showToast(`${def.name}이(가) 반짝입니다 · Lv.${level + 1}`);
+        }
+
+        function upgradeBuilding(id) {
+          const def = BUILDING_DEFS.find((item) => item.id === id);
+          if (!def) return;
+          const level = getBuildingLevel(id);
+          if (level >= 10) return;
+          const goldCost = getBuildingGoldCost(def);
+          const materialCost = getBuildingMaterialCost(def);
+          if (state.gold < goldCost || (state.materials[def.material] || 0) < materialCost) { showToast('건설에 필요한 골드와 재료가 부족합니다.'); return; }
+          state.gold -= goldCost;
+          state.materials[def.material] -= materialCost;
+          state.buildings[id] = level + 1;
+          state.combat = null;
+          commit();
+          renderBattle();
+          refreshPanels();
+          showToast(`${def.name}이(가) Lv.${level + 1}로 확장되었습니다.`);
+        }
+
+        function canBuyAnyUpgrade() {
+          return UPGRADE_DEFS.some((def) => getUpgradeLevel(def.id) < def.max && state.gold >= getUpgradeCost(def));
+        }
+
+        function addExperience(amount) {
+          const party = state.party.filter((id) => state.heroes[id]?.unlocked);
+          const levelUps = [];
+          party.forEach((id) => {
+            const heroState = state.heroes[id];
+            heroState.xp += Math.floor(amount);
+            while (heroState.xp >= getHeroXpToLevel(heroState.level) && heroState.level < 20) {
+              heroState.xp -= getHeroXpToLevel(heroState.level);
+              heroState.level += 1;
+              levelUps.push(id);
+            }
+          });
+          levelUps.forEach((id) => {
+            const token = document.querySelector(`[data-hero-token="${id}"]`);
+            if (token) { token.classList.add('level-up'); window.setTimeout(() => token.classList.remove('level-up'), 1000); }
+            showToast(`✨ ${HERO_DEFS[id].name} 레벨 업!`);
+          });
+        }
+
+        function awardCollection(id) {
+          state.collection.kills[id] = Number(state.collection.kills[id] || 0) + 1;
+          COLLECTION_BONUSES.forEach((bonus) => {
+            if (!state.collection.bonusesClaimed[bonus.id] && state.collection.kills[bonus.monster] >= bonus.threshold) {
+              state.collection.bonusesClaimed[bonus.id] = true;
+              if (bonus.kind === 'gold') state.collection.bonuses.gold += 0.01;
+              if (bonus.kind === 'materials') state.collection.bonuses.materials += 0.01;
+              if (bonus.kind === 'defense') state.collection.bonuses.defense += 0.02;
+              showToast(`도감 보너스 획득 · ${bonus.effect}`);
+            }
+          });
+        }
+
+        function awardEncounter(encounter) {
+          const stats = calculateStats();
+          const gold = Math.floor(encounter.gold * stats.rewardMultiplier * (encounter.isBoss ? 1.25 : 1));
+          const materialTotal = Math.max(1, Math.floor(encounter.materialCount * stats.materialMultiplier * (encounter.isBoss ? 1.4 : 1)));
+          const materials = makeMaterialReward(materialTotal);
+          Object.entries(materials).forEach(([key, value]) => { state.materials[key] = (state.materials[key] || 0) + value; });
+          state.gold += gold;
+          addExperience(Math.floor((encounter.isBoss ? 120 : 8 * Math.pow(1.1, encounter.stage - 1)) * stats.expMultiplier));
+          awardCollection(encounter.id);
+          spawnRewardFloaters(gold, materials);
+          return { gold, materials };
+        }
+
+        function spawnRewardFloaters(gold, materials) {
+          const goldFloat = document.createElement('span');
+          goldFloat.className = 'reward-floater';
+          goldFloat.style.left = '58%';
+          goldFloat.style.top = '56%';
+          goldFloat.textContent = `🪙 +${compactNumber(gold)}`;
+          el.effectLayer.appendChild(goldFloat);
+          window.setTimeout(() => goldFloat.remove(), 900);
+          const materialText = Object.entries(materials).map(([key, value]) => `${MATERIAL_ICONS[key]} +${compactNumber(value)}`).join(' ');
+          if (materialText) {
+            const materialFloat = document.createElement('span');
+            materialFloat.className = 'reward-floater material';
+            materialFloat.style.left = '47%';
+            materialFloat.style.top = '63%';
+            materialFloat.textContent = materialText;
+            el.effectLayer.appendChild(materialFloat);
+            window.setTimeout(() => materialFloat.remove(), 900);
+          }
+        }
+
+        function spawnFloating(text, kind = 'damage') {
+          const float = document.createElement('span');
+          float.className = `float-number ${kind}`;
+          float.style.left = `${kind === 'heal' ? 20 + Math.random() * 20 : 55 + Math.random() * 13}%`;
+          float.style.top = `${kind === 'heal' ? 54 + Math.random() * 12 : 38 + Math.random() * 16}%`;
+          float.textContent = text;
+          el.effectLayer.appendChild(float);
+          window.setTimeout(() => float.remove(), 900);
+        }
+
+        function simulateTick() {
+          const encounter = ensureEncounter();
+          const stats = calculateStats();
+          const combat = state.combat;
+          combat.tick += 1;
+          const isCrit = Math.random() < stats.critChance;
+          const baseDamage = stats.rawDps * (isCrit ? 1.85 : 1) * (encounter.isBoss ? stats.bossMultiplier : 1);
+          const damage = Math.max(1, Math.floor(baseDamage));
+          combat.monsterHp -= damage;
+          spawnFloating(`${isCrit ? 'CRIT ' : '-'}${compactNumber(damage)}`, isCrit ? 'crit' : 'damage');
+          const monsterToken = document.getElementById('monsterToken');
+          if (monsterToken) { monsterToken.classList.add('hit-flash'); window.setTimeout(() => monsterToken.classList.remove('hit-flash'), 260); }
+
+          if (stats.party.includes('sera') && combat.tick % 7 === 0 && combat.partyHp < combat.partyMaxHp) {
+            const heal = Math.min(combat.partyMaxHp - combat.partyHp, Math.floor(stats.healing));
+            combat.partyHp += heal;
+            if (heal > 0) spawnFloating(`+${compactNumber(heal)}`, 'heal');
+          }
+
+          if (combat.monsterHp <= 0) {
+            defeatEncounter(encounter);
             return;
           }
-          state.currentIndex += 1;
-          renderQuestion();
+
+          const incoming = encounter.attack * (encounter.isBoss ? 1.18 : 1) * stats.policy.damageTaken * (1 - stats.defense);
+          combat.partyHp -= incoming;
+          if (combat.partyHp <= 0) {
+            handlePartyDefeat(encounter, stats);
+            return;
+          }
+          renderBattle();
         }
 
-        function flashCorrect() {
-          elements.app.classList.remove('correct-flash');
-          void elements.app.offsetWidth;
-          elements.app.classList.add('correct-flash');
-          window.setTimeout(() => elements.app.classList.remove('correct-flash'), 700);
+        function defeatEncounter(encounter) {
+          const reward = awardEncounter(encounter);
+          const zone = getActiveZone();
+          const currentProgress = state.zoneProgress[zone.id];
+          currentProgress.highestStage = Math.max(currentProgress.highestStage, encounter.stage);
+          if (encounter.isBoss) {
+            currentProgress.bossDefeated = true;
+            celebrate();
+            const next = zone.next;
+            if (next) {
+              state.zoneProgress[next].unlocked = true;
+              state.currentZoneId = next;
+              state.currentStage = 1;
+              state.combat = null;
+              el.battleLog.textContent = `${ZONES[next].name} 지도가 펼쳐졌습니다!`;
+              state.settings.activeTab = 'expedition';
+              commit();
+              renderBattle();
+              refreshPanels();
+              showToast(`🗺️ ${ZONES[next].name} 해금 · 새 길이 열렸습니다!`);
+              flashNewZone();
+              return;
+            }
+            state.rebirthAvailable = true;
+            state.currentStage = encounter.stage;
+            state.combat = null;
+            commit();
+            renderBattle();
+            refreshPanels();
+            showToast('✨ 모든 지역을 정복했습니다 · 환생의 문이 열렸습니다.');
+            return;
+          }
+          state.currentStage += 1;
+          currentProgress.highestStage = Math.max(currentProgress.highestStage, state.currentStage);
+          state.combat = null;
+          if (encounter.stage % 3 === 0) commit();
+          renderBattle();
         }
 
-        function shakeQuestion() {
-          elements.questionCard.classList.remove('shake');
-          void elements.questionCard.offsetWidth;
-          elements.questionCard.classList.add('shake');
+        function handlePartyDefeat(encounter, stats) {
+          state.combat.partyHp = stats.maxHp;
+          state.combat.monsterHp = state.combat.monsterMaxHp;
+          if (encounter.isBoss) {
+            let reason = '보스 피해 부족';
+            if (stats.dps < encounter.hp / 10) reason = '공격력 부족';
+            else if (stats.maxHp * (1 - stats.defense) < encounter.attack * 5) reason = '생존력 부족';
+            el.bossFailReason.textContent = `첫 보스 패배 원인은 ${reason}입니다. 현재 방침을 바꾸거나 해당 능력을 올리면 다음 도전이 더 편해집니다.`;
+            el.bossFailModal.classList.remove('is-hidden');
+            state.combat.lastLog = `${encounter.name}에게 막혔습니다. 길드장이 다음 선택을 준비합니다.`;
+          } else {
+            state.combat.lastLog = '대원들이 야영하고 다시 일어났습니다. 진행은 안전하게 유지됩니다.';
+          }
+          commit();
+          renderBattle();
+        }
+
+        function flashNewZone() {
+          const card = document.querySelector(`[data-id="${state.currentZoneId}"]`);
+          if (card) { card.classList.add('new-zone'); window.setTimeout(() => card.classList.remove('new-zone'), 800); }
         }
 
         function celebrate() {
-          if (typeof window.confetti !== 'function') return;
-          const defaults = { spread: 72, ticks: 90, gravity: 1.15, scalar: 0.82, disableForReducedMotion: true };
-          window.confetti({ ...defaults, particleCount: 55, origin: { x: 0.22, y: 0.56 }, colors: ['#533afd', '#f96bee', '#ffffff'] });
-          window.setTimeout(() => {
-            window.confetti({ ...defaults, particleCount: 55, origin: { x: 0.78, y: 0.56 }, colors: ['#ea2261', '#533afd', '#f5e9d4'] });
-          }, 110);
+          if (typeof window.confetti !== 'function' || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+          window.confetti({ particleCount: 55, spread: 72, origin: { y: 0.55 }, colors: ['#c99635', '#7356b5', '#28483a', '#fbf4e7'], disableForReducedMotion: true });
+        }
+
+        function getBestStageTotal() {
+          return Object.values(state.zoneProgress).reduce((sum, progress) => sum + (progress.bossDefeated ? progress.highestStage : Math.max(0, progress.highestStage - 1)), 0);
+        }
+
+        function getExpectedFame() {
+          const base = Math.max(1, Math.floor(getBestStageTotal() / 10));
+          const multiplier = 1 + getUpgradeLevel('smallSanctuary') * 0.06 + getBuildingLevel('shrine') * 0.05;
+          return Math.max(1, Math.floor(base * multiplier));
+        }
+
+        function openRebirthModal() {
+          if (!state.rebirthAvailable) return;
+          const fame = getExpectedFame();
+          el.rebirthFame.textContent = `+${compactNumber(fame)}`;
+          el.rebirthGold.textContent = `+${(state.fame + fame) * 1.5}%`;
+          el.rebirthAttack.textContent = `+${(state.fame + fame) * 1.5}%`;
+          el.rebirthModal.classList.remove('is-hidden');
+        }
+
+        function confirmRebirth() {
+          if (!state.rebirthAvailable) return;
+          const fame = getExpectedFame();
+          state.fame += fame;
+          state.gold = 160;
+          state.materials = { wood: 70, leather: 38, iron: 0, gem: 0, rune: 0, relic: 0 };
+          Object.keys(state.heroes).forEach((id) => { state.heroes[id].level = 1; state.heroes[id].xp = 0; });
+          Object.keys(state.zoneProgress).forEach((id, index) => { state.zoneProgress[id] = { unlocked: index === 0, highestStage: 1, bossDefeated: false }; });
+          state.currentZoneId = 'forest';
+          state.currentStage = 1;
+          state.rebirthAvailable = false;
+          state.rebirthCount += 1;
+          EQUIPMENT_DEFS.forEach((def) => { state.equipment[def.id] = Math.floor(getEquipmentLevel(def.id) / 2); });
+          state.combat = null;
+          el.rebirthModal.classList.add('is-hidden');
+          state.settings.activeTab = 'expedition';
+          commit();
+          renderBattle();
+          refreshPanels();
+          showToast(`✨ 환생 완료 · 명성 +${compactNumber(fame)}`);
+        }
+
+        function renderOfflineModal(reward) {
+          if (!reward) return;
+          el.offlineTime.textContent = `${Math.floor(reward.minutes)}분`;
+          el.offlineGold.textContent = compactNumber(reward.gold);
+          el.offlineExp.textContent = compactNumber(reward.exp);
+          el.offlineMaterial.innerHTML = `<i data-lucide="package" aria-hidden="true"></i><div><strong>재료 보관함</strong><p>${formatMaterial(reward.materialMap)}이(가) 길드 창고에 정리되었습니다.</p></div>`;
+          refreshIcons();
+          el.offlineModal.classList.remove('is-hidden');
+        }
+
+        function claimOfflineReward() {
+          const reward = state.offlineRewardPending;
+          if (!reward) { el.offlineModal.classList.add('is-hidden'); return; }
+          state.gold += reward.gold;
+          Object.entries(reward.materialMap || {}).forEach(([key, value]) => { state.materials[key] = (state.materials[key] || 0) + value; });
+          addExperience(reward.exp);
+          state.offlineRewardPending = null;
+          el.offlineModal.classList.add('is-hidden');
+          commit();
+          renderBattle();
+          refreshPanels();
+          showToast(`복귀 보상 수령 · 골드 ${compactNumber(reward.gold)}`);
         }
 
         function getAudioContext() {
-          if (!state.soundOn) return null;
+          if (!state.settings.sound) return null;
           try {
-            if (!state.audioContext) {
+            if (!audioContext) {
               const AudioContext = window.AudioContext || window.webkitAudioContext;
               if (!AudioContext) return null;
-              state.audioContext = new AudioContext();
+              audioContext = new AudioContext();
             }
-            if (state.audioContext.state === 'suspended') {
-              void state.audioContext.resume().catch(() => {});
-            }
-            return state.audioContext;
+            if (audioContext.state === 'suspended') void audioContext.resume().catch(() => {});
+            return audioContext;
           } catch (error) {
             return null;
           }
         }
 
-        function tone(frequency, duration, type = 'sine', volume = 0.035, delay = 0) {
+        function tone(frequency, duration, type = 'sine', volume = 0.02) {
           const context = getAudioContext();
           if (!context) return;
           try {
             const oscillator = context.createOscillator();
             const gain = context.createGain();
             oscillator.type = type;
-            oscillator.frequency.setValueAtTime(frequency, context.currentTime + delay);
-            gain.gain.setValueAtTime(0.0001, context.currentTime + delay);
-            gain.gain.exponentialRampToValueAtTime(volume, context.currentTime + delay + 0.012);
-            gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + delay + duration);
+            oscillator.frequency.value = frequency;
+            gain.gain.setValueAtTime(0.0001, context.currentTime);
+            gain.gain.exponentialRampToValueAtTime(volume, context.currentTime + 0.012);
+            gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + duration);
             oscillator.connect(gain);
             gain.connect(context.destination);
-            oscillator.start(context.currentTime + delay);
-            oscillator.stop(context.currentTime + delay + duration + 0.02);
+            oscillator.start();
+            oscillator.stop(context.currentTime + duration + 0.02);
           } catch (error) {
-            // A muted or unavailable audio device should never interrupt the game.
+            // 사운드 장치가 없어도 게임은 계속됩니다.
           }
-        }
-
-        function playTick(frequency) {
-          tone(frequency, 0.07, 'square', 0.018);
-        }
-
-        function playSuccess() {
-          tone(520, 0.1, 'sine', 0.025);
-          tone(760, 0.16, 'sine', 0.03, 0.08);
-        }
-
-        function playFailure() {
-          tone(180, 0.18, 'sawtooth', 0.03);
-          tone(120, 0.22, 'sawtooth', 0.024, 0.1);
         }
 
         function toggleSound() {
-          state.soundOn = !state.soundOn;
-          elements.soundToggle.setAttribute('aria-pressed', String(state.soundOn));
-          elements.soundToggle.setAttribute('aria-label', state.soundOn ? '소리 끄기' : '소리 켜기');
-          elements.soundToggle.classList.toggle('is-on', state.soundOn);
-          elements.soundToggle.innerHTML = `<i data-lucide="${state.soundOn ? 'volume-2' : 'volume-x'}" aria-hidden="true"></i>`;
-          refreshIcons();
-          if (state.soundOn) {
-            tone(640, 0.09, 'sine', 0.025);
-            showToast('사운드 ON · 10초 카운트다운이 준비됐어요');
-          } else {
-            showToast('사운드 OFF');
-          }
-        }
-
-        async function shareScore() {
-          const score = state.lastRunScore;
-          const text = `나는 Fact or Cap?에서 ${score}연속 정답! 팩트와 AI 헛소리, 10초 안에 가려냄. 🔥`;
-          try {
-            if (navigator.share) {
-              await navigator.share({ title: 'Fact or Cap?', text, url: window.location.href });
-              showToast('공유 시트를 열었어요 · 카톡으로 자랑해봐요!');
-              return;
-            }
-          } catch (error) {
-            if (error && error.name === 'AbortError') return;
-          }
-
-          let copied = false;
-          try {
-            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-              await navigator.clipboard.writeText(text);
-              copied = true;
-            }
-          } catch (error) {
-            copied = false;
-          }
-
-          if (!copied) {
-            try {
-              const helper = document.createElement('textarea');
-              helper.value = text;
-              helper.style.position = 'fixed';
-              helper.style.opacity = '0';
-              document.body.appendChild(helper);
-              helper.focus();
-              helper.select();
-              copied = document.execCommand('copy');
-              helper.remove();
-            } catch (error) {
-              copied = false;
-            }
-          }
-
-          showToast(copied ? '점수 복사 완료 · 카카오톡에 붙여넣기!' : '공유할 점수: ' + text);
+          state.settings.sound = !state.settings.sound;
+          commit();
+          if (state.settings.sound) { tone(640, 0.08); showToast('작은 종소리 ON'); } else showToast('사운드 OFF');
+          renderHeader();
         }
 
         function showToast(message) {
           window.clearTimeout(state.toastTimeout);
-          elements.toast.textContent = message;
-          elements.toast.classList.remove('is-hidden');
-          state.toastTimeout = window.setTimeout(() => elements.toast.classList.add('is-hidden'), 2800);
+          el.toast.textContent = message;
+          el.toast.classList.remove('is-hidden');
+          state.toastTimeout = window.setTimeout(() => el.toast.classList.add('is-hidden'), 2800);
         }
 
-        elements.factButton.addEventListener('click', () => handleAnswer(true));
-        elements.capButton.addEventListener('click', () => handleAnswer(false));
-        elements.continueButton.addEventListener('click', continueFromFeedback);
-        elements.shareButton.addEventListener('click', shareScore);
-        elements.soundToggle.addEventListener('click', toggleSound);
+        state.toastTimeout = null;
 
-        document.addEventListener('keydown', (event) => {
-          if (event.key.toLowerCase() === 'f' && !elements.factButton.disabled && elements.feedbackOverlay.classList.contains('is-hidden')) {
-            event.preventDefault();
-            handleAnswer(true);
-          }
-          if (event.key.toLowerCase() === 'c' && !elements.capButton.disabled && elements.feedbackOverlay.classList.contains('is-hidden')) {
-            event.preventDefault();
-            handleAnswer(false);
-          }
-          if ((event.key === 'Enter' || event.key === ' ') && !elements.feedbackOverlay.classList.contains('is-hidden')) {
-            if (document.activeElement === elements.shareButton) return;
-            event.preventDefault();
-            continueFromFeedback();
-          }
+        document.getElementById('welcomeClose').addEventListener('click', () => {
+          state.settings.hasSeenIntro = true;
+          el.welcomeModal.classList.add('is-hidden');
+          commit();
         });
+        document.getElementById('offlineClaim').addEventListener('click', claimOfflineReward);
+        document.getElementById('bossFailClose').addEventListener('click', () => el.bossFailModal.classList.add('is-hidden'));
+        document.getElementById('bossFailUpgrade').addEventListener('click', () => {
+          el.bossFailModal.classList.add('is-hidden');
+          state.settings.activeTab = 'upgrades';
+          commit();
+          renderTabs();
+          renderActivePanel();
+        });
+        document.getElementById('rebirthCancel').addEventListener('click', () => el.rebirthModal.classList.add('is-hidden'));
+        document.getElementById('rebirthConfirm').addEventListener('click', confirmRebirth);
+        el.sound.addEventListener('click', toggleSound);
 
-        updateStats();
-        startGame();
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) saveGame();
+        });
+        window.addEventListener('pagehide', saveGame);
+        window.addEventListener('beforeunload', saveGame);
+
+        function refreshIcons() {
+          if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+        }
+
+        loadState();
+        ensureEncounter();
+        renderHeader();
+        renderBattle();
+        renderTabs();
+        renderActivePanel();
+        refreshIcons();
+
+        if (newGame && !state.settings.hasSeenIntro) {
+          el.welcomeModal.classList.remove('is-hidden');
+        } else if (state.offlineRewardPending) {
+          renderOfflineModal(state.offlineRewardPending);
+        }
+
+        gameLoop = window.setInterval(() => {
+          simulateTick();
+          if (state.combat?.tick % 5 === 0) saveGame();
+        }, TICK_MS);
+
+        // 첫 진입 직후에도 길드가 멈추지 않도록, 화면이 보이지 않을 때는 브라우저의 저장 이벤트가 기록을 담당합니다.
+        void gameLoop;
       })();
     </script>
   </body>
