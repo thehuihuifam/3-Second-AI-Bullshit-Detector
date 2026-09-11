@@ -1,4 +1,4 @@
-name: Deploy Tiny Guild Auto Quest to GitHub Pages
+name: Deploy Alley Cafe Tycoon to GitHub Pages
 
 on:
   push:
