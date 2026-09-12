@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0e1420" />
+    <meta name="description" content="ECHO — 직전 시도의 나와 협동해 목표에 동시에 닿는 시간 에코 퍼즐 게임" />
+    <title>ECHO · 시간 에코 퍼즐</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <div class="stage" id="stage">
+        <canvas id="game"></canvas>
+
+        <div class="hud" id="hud" hidden>
+          <div class="hud-top">
+            <div class="hud-left">
+              <span class="hud-level" id="hudLevel">LV 01</span>
+              <span class="hud-name" id="hudName">첫 만남</span>
+              <span class="echo-state" id="echoState">ECHO 없음</span>
+            </div>
+            <div class="hud-actions">
+              <button class="btn" id="btnRetry" type="button">다시 <kbd>R</kbd></button>
+              <button class="btn" id="btnLevels" type="button">레벨 <kbd>L</kbd></button>
+              <button class="btn icon" id="btnSound" type="button" aria-pressed="true" aria-label="사운드">🔊</button>
+            </div>
+          </div>
+
+          <div class="hud-bottom">
+            <div class="hud-topline">
+              <span class="attempts" id="hudAttempts">시도 1</span>
+              <span class="tag" id="echoTag" hidden>혼자서는 클리어되지 않습니다 · R로 에코 만들기</span>
+            </div>
+            <div class="hint" id="hudHint"></div>
+            <div class="keys">
+              <kbd>←</kbd><kbd>→</kbd> 이동 · <kbd>Space</kbd> 점프 · <kbd>R</kbd> 다시 · <kbd>L</kbd> 레벨
+            </div>
+          </div>
+        </div>
+
+        <div class="pad" id="pad" hidden>
+          <button class="pad-btn" data-key="left" type="button" aria-label="왼쪽">◀</button>
+          <button class="pad-btn" data-key="right" type="button" aria-label="오른쪽">▶</button>
+          <button class="pad-btn jump" data-key="jump" type="button" aria-label="점프">점프</button>
+        </div>
+
+        <section class="screen" id="title">
+          <div class="screen-inner">
+            <h1 class="logo">ECHO</h1>
+            <p class="tagline">자신이 방금 지나온 경로를 1초 후의 '에코'로 재현하며 퍼즐을 푸는 타이밍 루프 게임</p>
+            <ul class="rules">
+              <li>현재의 나 + <b class="c-echo">직전 시도의 나(에코)</b>가 <b class="c-goal">동시에 목표</b>에 닿으면 클리어</li>
+              <li>에코는 조작할 수 없고, 지형에 막히지도 않습니다. 그저 과거의 기록일 뿐입니다</li>
+              <li>새 시도를 시작하면 직전 시도의 경로가 새 에코로 덮어씌워집니다</li>
+            </ul>
+            <div class="screen-actions">
+              <button class="btn primary" id="titleStart" type="button">시작하기</button>
+              <button class="btn" id="titleLevels" type="button">레벨 선택</button>
+            </div>
+            <p class="foot">키보드 <kbd>←</kbd><kbd>→</kbd> <kbd>Space</kbd> · 모바일은 화면 하단 버튼</p>
+          </div>
+        </section>
+
+        <section class="screen" id="select" hidden>
+          <div class="screen-inner">
+            <h2 class="screen-title">레벨 선택</h2>
+            <div class="level-grid" id="selectGrid"></div>
+            <div class="screen-actions">
+              <button class="btn" id="selectBack" type="button">돌아가기</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card-wrap" id="card" hidden>
+          <div class="card">
+            <div class="card-badge">SYNC</div>
+            <h2 class="card-title" id="cardTitle">LEVEL CLEARED</h2>
+            <p class="card-sub" id="cardSub"></p>
+            <div class="card-actions">
+              <button class="btn primary" id="cardNext" type="button">다음 레벨 ▸</button>
+              <button class="btn" id="cardRetry" type="button">다시 하기</button>
+              <button class="btn" id="cardLevels" type="button">레벨 선택</button>
+            </div>
+            <p class="card-foot"><kbd>Enter</kbd> 다음 레벨 · <kbd>R</kbd> 다시 · <kbd>L</kbd> 레벨 선택</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="levels.js"></script>
+    <script src="engine.js"></script>
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+  </body>
+</html>
